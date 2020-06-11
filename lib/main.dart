@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quizomania/model/category/category_bloc.dart';
-import 'package:quizomania/screens/pick_category.dart';
-import 'package:quizomania/screens/pick_specification_questions_dialog.dart';
+import 'package:quizomania/screens/pick_category_page.dart';
 import 'package:quizomania/widgets/big_button.dart';
 
 void main() {
@@ -32,7 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //rgb(37, 44, 73)
+
       backgroundColor: Colors.white,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -53,10 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => BlocProvider(
-                    create: (context) => CategoryBloc(),
-                    child: PickCategoryPage(),
-                  ),
+                  builder: (context) => PickCategoryPage(),
                 ),
               );
             },

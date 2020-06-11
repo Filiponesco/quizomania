@@ -1,13 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:quizomania/model/difficulty_level.dart';
-import 'package:quizomania/screens/pick_category.dart';
+import 'package:quizomania/model/category.dart';
+import 'package:quizomania/model/enums_difficulty_answer.dart';
+import 'package:quizomania/screens/question_page.dart';
 import 'package:quizomania/widgets/my_back_button.dart';
 import 'package:quizomania/widgets/big_button.dart';
 import 'package:quizomania/widgets/difficulty_button.dart';
 
 class SpecificationQuestionsDialog extends StatefulWidget {
+  final Category selectedCategory;
+
+  SpecificationQuestionsDialog({@required this.selectedCategory});
+
   @override
   _SpecificationQuestionsDialogState createState() =>
       _SpecificationQuestionsDialogState();
@@ -46,19 +51,26 @@ class _SpecificationQuestionsDialogState
                   top: 30, left: 25, right: 25, bottom: 20),
               child: Column(
                 children: <Widget>[
+                  Text(
+                    '${widget.selectedCategory.category}',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Balsamiq'),
+                  ),
                   RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       style: TextStyle(fontSize: 21, fontFamily: 'Balsamiq'),
                       children: [
                         TextSpan(
-                            text: "Select the ",
+                            text: "\nSelect the ",
                             style: TextStyle(color: Colors.black)),
                         TextSpan(
                           text: "difficulty",
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
+                              fontWeight: FontWeight.bold, color: Colors.black),
                         ),
                         TextSpan(
                             text: " \nof questions ",
@@ -105,13 +117,11 @@ class _SpecificationQuestionsDialogState
                 style: TextStyle(fontSize: 21, fontFamily: 'Balsamiq'),
                 children: [
                   TextSpan(
-                      text: "Pick the ",
-                      style: TextStyle(color: Colors.black)),
+                      text: "Pick the ", style: TextStyle(color: Colors.black)),
                   TextSpan(
                     text: "number",
                     style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
+                        fontWeight: FontWeight.bold, color: Colors.black),
                   ),
                   TextSpan(
                       text: " \nof questions ",
@@ -124,26 +134,32 @@ class _SpecificationQuestionsDialogState
                 minValue: 1,
                 maxValue: 25,
                 onChanged: (num) => _changeNumberOfQuestion(num)),
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-            MyBackButton(
-              radius: 30.0,
-            ),
-            BigButton(
-              radius: 30.0,
-              text: 'Start',
-              color: Colors.blue,
-              onPressed: _pickedLevel == null
-                  ? null
-                  : () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => PickCategoryPage()));
-                    },
-            ),
+                MyBackButton(
+                  radius: 30.0,
+                  onPressed: () => Navigator.pop(context),
+                ),
+                BigButton(
+                  radius: 30.0,
+                  text: 'Start',
+                  color: Colors.blue,
+                  onPressed: _pickedLevel == null
+                      ? null
+                      : () {
+                          Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => QuestionPage(
+                                          currentCategory:
+                                              widget.selectedCategory)))
+                              .then((_) => Navigator.of(context).pop());
+                        },
+                ),
               ],
             )
           ],

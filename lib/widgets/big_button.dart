@@ -5,9 +5,10 @@ class BigButton extends StatelessWidget {
   final Function onPressed;
   final Color color;
   final double radius;
+  final Color fontColor;
 
   const BigButton(
-      {Key key, this.text, this.onPressed, this.color, this.radius = 70.0})
+      {Key key, this.text, this.onPressed, this.color, this.radius = 70.0, this.fontColor = Colors.white})
       : super(key: key);
 
   @override
@@ -24,7 +25,7 @@ class BigButton extends StatelessWidget {
             style: TextStyle(
                 fontFamily: 'Balsamiq',
                 fontSize: 23,
-                color: Colors.white,
+                color: fontColor,
                 fontWeight: FontWeight.bold)),
         onPressed: onPressed,
       ),

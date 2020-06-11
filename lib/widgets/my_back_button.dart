@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 class MyBackButton extends StatelessWidget {
   final double radius;
+  final Function onPressed;
   const MyBackButton({
     Key key,
-    this.radius = 70
+    this.radius = 70,
+    this.onPressed
   }) : super(key: key);
 
   @override
@@ -20,7 +22,7 @@ class MyBackButton extends StatelessWidget {
         child: Icon(
             Icons.arrow_back
         ),
-        onPressed: (){Navigator.pop(context);},
+        onPressed: onPressed,
       ),
     );
   }
