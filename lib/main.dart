@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quizomania/model/category/category_bloc.dart';
+import 'package:quizomania/screens/pick_category.dart';
+import 'package:quizomania/screens/pick_specification_questions_dialog.dart';
+import 'package:quizomania/widgets/big_button.dart';
 
 void main() {
   runApp(MyApp());
@@ -28,26 +33,35 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       //rgb(37, 44, 73)
-      backgroundColor: Color.fromARGB(255, 37, 44, 73),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ButtonTheme(
-              minWidth: 150,
-              height: 70,
-              child: RaisedButton(
-                color: Colors.blue,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(70),
+      backgroundColor: Colors.white,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 80, right: 80),
+            child: Image(
+              image: AssetImage('assets/images/logo_quiz.png'),
+            ),
+          ),
+          SizedBox(
+            height: 170,
+          ),
+          BigButton(
+            color: Colors.blue,
+            text: 'Start',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BlocProvider(
+                    create: (context) => CategoryBloc(),
+                    child: PickCategoryPage(),
+                  ),
                 ),
-                child: Text('Start',
-                    style: TextStyle(fontFamily: 'Balsamiq', fontSize: 23, color: Colors.white, fontWeight: FontWeight.bold)),
-                onPressed: (){},
-              ),
-            )
-          ],
-        ),
+              );
+            },
+          )
+        ],
       ),
     );
   }
