@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quizomania/screens/pick_category_page.dart';
+import 'package:quizomania/screens/question_page.dart';
 import 'package:quizomania/widgets/big_button.dart';
 
 void main() {
@@ -10,10 +11,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      initialRoute: '/',
+      routes: {
+        // When navigating to the "/" route, build the FirstScreen widget.
+        '/': (context) => MyHomePage(),
+        // When navigating to the "/second" route, build the SecondScreen widget.
+        '/category': (context) => PickCategoryPage(),
+        '/question': (context) => QuestionPage(),
+      },
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(),
     );
   }
 }
@@ -29,32 +37,30 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      backgroundColor: Colors.white,
-      body: Column(
+      floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 80, right: 80),
-            child: Image(
-              image: AssetImage('assets/images/logo_quiz.png'),
-            ),
-          ),
-          SizedBox(
-            height: 170,
-          ),
+          //i dont knwo why this button it is not on center!
+          SizedBox(width:25),
           BigButton(
             color: Colors.blue,
             text: 'Start',
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PickCategoryPage(),
-                ),
-              );
+              Navigator.of(context).pushNamed('/category');
             },
-          )
+          ),
+        ],
+      ),
+      backgroundColor: Colors.white,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          Center(
+            child: Image(
+              image: AssetImage('assets/images/logo_quiz.png'),
+              width:200
+            ),
+          ),
         ],
       ),
     );

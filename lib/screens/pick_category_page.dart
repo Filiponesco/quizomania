@@ -31,30 +31,39 @@ class _PickCategoryPageState extends State<PickCategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: BlocBuilder<CategoryBloc, CategoryState>(
-      bloc: _categoryBloc,
-      builder: (context, state) {
-        if (state is LoadingTest) {
-          return Center(child: CircularProgressIndicator());
-        } else if (state is CategoryList) {
-          return GridView.builder(
-            gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-            itemBuilder: (_, index) => Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: OneCategoryCard(
-                nameCategory: state.categories[index].category,
-                icon: Icons.category,
-                onTap: () => _onPickCategory(state.categories[index], context),
+        body: Stack(children: <Widget>[
+      Center(
+        child: Image(
+          image: AssetImage('assets/images/logo_quiz.png'),
+          width:200
+        ),
+      ),
+      BlocBuilder<CategoryBloc, CategoryState>(
+        bloc: _categoryBloc,
+        builder: (context, state) {
+          if (state is LoadingTest) {
+            return Center(child: CircularProgressIndicator());
+          } else if (state is CategoryList) {
+            return GridView.builder(
+              gridDelegate:
+                  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+              itemBuilder: (_, index) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: OneCategoryCard(
+                  nameCategory: state.categories[index].category,
+                  icon: Icons.category,
+                  onTap: () =>
+                      _onPickCategory(state.categories[index], context),
+                ),
               ),
-            ),
-            itemCount: state.categories.length,
-          );
-        } else {
-          return Center(child: Text('state is: ${state.toString()}'));
-        }
-      },
-    ));
+              itemCount: state.categories.length,
+            );
+          } else {
+            return Center(child: Text('state is: ${state.toString()}'));
+          }
+        },
+      ),
+    ]));
   }
 
   @override

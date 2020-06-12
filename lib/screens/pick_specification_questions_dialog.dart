@@ -151,13 +151,13 @@ class _SpecificationQuestionsDialogState
                   onPressed: _pickedLevel == null
                       ? null
                       : () {
-                          Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => QuestionPage(
-                                          currentCategory:
-                                              widget.selectedCategory)))
-                              .then((_) => Navigator.of(context).pop());
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => QuestionPage(
+                                currentCategory:
+                                widget.selectedCategory)))
+                        .then((_) => Navigator.of(context).pop());
                         },
                 ),
               ],

@@ -1,12 +1,36 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:quizomania/main.dart';
 import 'package:quizomania/widgets/big_button.dart';
 import 'package:quizomania/widgets/my_back_button.dart';
 
 class ResultPage extends StatelessWidget {
+  //ScoreTable(this.score, this.totalScore, this.percentage);
+  final int score;
+  final int totalScore;
+  final double percentage;
+  ResultPage({@required this.score, @required this.totalScore, @required this.percentage});
   @override
   Widget build(BuildContext context) {
+    String _description;
+    Color _colorCard;
+    if(percentage < 0.33){
+      _description = 'Bad Luck';
+      _colorCard = Colors.red;
+    }
+    else if(percentage < 0.5){
+      _description = 'Not bad';
+      _colorCard = Colors.orange;
+    }
+    else if(percentage < 0.75){
+      _description = 'Good Job!';
+      _colorCard = Colors.green;
+    }
+    else{
+      _description = 'Congratulations!';
+      _colorCard = Colors.blue;
+    }
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -25,16 +49,17 @@ class ResultPage extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    color: Colors.green,
+                    color: _colorCard,
                     elevation: 8,
                     child: Container(
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 25),
+                        padding: const EdgeInsets.symmetric(vertical: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              'Your Actual \nScore',
+                              '$_description\nYour Actual Score',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 30.0,
@@ -43,16 +68,25 @@ class ResultPage extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 20,),
                             Text(
-                              '81',
+                              '${(percentage*100).floor()}%',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 80.0,
                                 fontFamily: 'Balsamiq',
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                letterSpacing: 7
+                                letterSpacing: 1
+                              ),
+                            ),
+                            Text(
+                              '${'Good Answers: $score/$totalScore'}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 20.0,
+                                  fontFamily: 'Balsamiq',
+                                  color: Colors.white,
+                                  letterSpacing: 1
                               ),
                             ),
                           ],
@@ -81,6 +115,7 @@ class ResultPage extends StatelessWidget {
                     color: Colors.green,
                     text: 'Play Again',
                     onPressed: () {
+                      Navigator.popUntil(context, ModalRoute.withName('/category'));
                     },
                   ),
                 ],
