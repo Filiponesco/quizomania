@@ -151,13 +151,16 @@ class _SpecificationQuestionsDialogState
                   onPressed: _pickedLevel == null
                       ? null
                       : () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => QuestionPage(
-                                currentCategory:
-                                widget.selectedCategory)))
-                        .then((_) => Navigator.of(context).pop());
+                          Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => QuestionPage(
+                                            currentCategory:
+                                                widget.selectedCategory,
+                                            difficulty: DifficultyLevel.hard,
+                                            quantity: 10,//TODO - change to real values
+                                          )))
+                              .then((_) => Navigator.of(context).pop());
                         },
                 ),
               ],

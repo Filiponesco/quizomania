@@ -24,7 +24,7 @@ class _PickCategoryPageState extends State<PickCategoryPage> {
 
   @override
   void initState() {
-    _categoryBloc = CategoryBloc();
+    _categoryBloc = CategoryBloc()..add(LoadCategories());
     super.initState();
   }
 
@@ -41,7 +41,7 @@ class _PickCategoryPageState extends State<PickCategoryPage> {
       BlocBuilder<CategoryBloc, CategoryState>(
         bloc: _categoryBloc,
         builder: (context, state) {
-          if (state is LoadingTest) {
+          if (state is LoadingCategories) {
             return Center(child: CircularProgressIndicator());
           } else if (state is CategoryList) {
             return GridView.builder(

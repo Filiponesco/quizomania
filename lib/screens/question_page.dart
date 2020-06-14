@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,8 +12,10 @@ import 'package:quizomania/widgets/my_back_button.dart';
 
 class QuestionPage extends StatefulWidget {
   final Category currentCategory;
+  final DifficultyLevel difficulty;
+  final int quantity;
 
-  QuestionPage({@required this.currentCategory});
+  QuestionPage({@required this.currentCategory, this.difficulty, this.quantity});
 
   @override
   _QuestionPageState createState() => _QuestionPageState();
@@ -26,7 +26,7 @@ class _QuestionPageState extends State<QuestionPage> {
 
   @override
   void initState() {
-    _testBloc = TestBloc(widget.currentCategory.id);
+    _testBloc = TestBloc()..add(LoadTest(widget.currentCategory.id, widget.difficulty, widget.quantity));
     super.initState();
   }
 
