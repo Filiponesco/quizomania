@@ -24,7 +24,7 @@ class _PickCategoryPageState extends State<PickCategoryPage> {
 
   @override
   void initState() {
-    _categoryBloc = CategoryBloc();
+    _categoryBloc = CategoryBloc()..add(LoadCategories());
     super.initState();
   }
 

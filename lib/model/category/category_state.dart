@@ -11,6 +11,4 @@ class CategoryList extends CategoryState {
 
 class CategoryError extends CategoryState {}
 
-class NewTest extends CategoryState {}
-
-class LoadingTest extends CategoryState {}
+class LoadingCategories extends CategoryState {}

@@ -1,53 +1,52 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:quizomania/model/category.dart';
+import 'package:quizomania/model/enums_difficulty_answer.dart';
 import 'package:quizomania/model/question.dart';
+import 'package:quizomania/model/repository.dart';
 
 part 'test_event.dart';
 
 part 'test_state.dart';
 
 class TestBloc extends Bloc<TestEvent, TestState> {
-  final int categoryId;
   int currentQuestion = 0;
+  List<Question> questions;
+  Repository repo = Repository();
+  List<int> points;
 
-  List<Question> questions = [
-    Question(
-        Category(1, "Filmy"),
-        "typ",
-        "łatwe",
-        "Which movie released in 2016 features Superman and Batman fighting?",
-        "Batman v Superman: Dawn of Justice", [
-      "Batman v Superman: Superapocalypse",
-      "Batman v Superman: Black of Knight",
-      "Batman v Superman: Knightfall"
-    ]),
-    Question(
-        Category(1, "Filmy"),
-        "typ",
-        "łatwe",
-        "Daniel Radcliffe became a global star in the film industry due to his performance in which film franchise?",
-        "Harry Potter",
-        ["Ted", "Spy Kids", "Pirates of the Caribbean"]),
-    Question(
-        Category(1, "Filmy"),
-        "typ",
-        "łatwe",
-        "Who starred as Bruce Wayne and Batman in Tim Burton's 1989 movie 'Batman'?",
-        "Michael Keaton",
-        ["George Clooney", "Val Kilmer", "Adam West"]),
-  ];
-
-  TestBloc(this.categoryId);
+  TestBloc();
 
   @override
-  TestState get initialState =>
-      FirstQuestion(questions[currentQuestion], currentQuestion);
+  TestState get initialState => LoadingQuestions();
 
   @override
   Stream<TestState> mapEventToState(TestEvent event) async* {
-    if (event is NextQuestion) {
+    if (event is LoadTest) {
+      yield LoadingQuestions();
+
+      String difficulty = '';
+      switch (event.difficulty) {
+        case DifficultyLevel.easy:
+          difficulty = 'easy';
+          break;
+        case DifficultyLevel.medium:
+          difficulty = 'medium';
+          break;
+        case DifficultyLevel.hard:
+          difficulty = 'hard';
+          break;
+      }
+      try {
+        questions = await repo.getQuestions(
+            event.quantity, difficulty, event.categoryId);
+        points = List.filled(questions.length, 0);
+        yield FirstQuestion(questions[0], currentQuestion);
+      } catch (e) {
+        yield QuestionError();
+        print("Error: " + e.toString());
+      }
+    } else if (event is NextQuestion) {
       if (currentQuestion + 1 < questions.length - 1) {
         currentQuestion++;
         yield MiddleQuestion(questions[currentQuestion], currentQuestion);
@@ -65,7 +64,12 @@ class TestBloc extends Bloc<TestEvent, TestState> {
       }
     } else if (event is AnswerQuestion) {
       questions[event.questionNumber].answered = true;
-      questions[event.questionNumber].answerId = event.answerId;
+      questions[event.questionNumber].answerId = event.id;
+      if (questions[event.questionNumber].correctAnswer == event.answer) {
+        points[event.questionNumber] = 1;
+      } else {
+        points[event.questionNumber] = 0;
+      }
       if (event.questionNumber == 0)
         yield MiddleQuestion(questions[currentQuestion], currentQuestion);
       else if (event.questionNumber == questions.length - 1)
@@ -73,7 +77,9 @@ class TestBloc extends Bloc<TestEvent, TestState> {
       else
         yield MiddleQuestion(questions[currentQuestion], currentQuestion);
     } else if (event is EndTest) {
-      yield ScoreTable(1, questions.length, 1 / 3);
+      int sum =
+          points.fold(0, (previousValue, element) => previousValue + element);
+      yield ScoreTable(sum, questions.length, sum / questions.length);
     }
   }
 }

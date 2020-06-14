@@ -3,6 +3,8 @@ part of 'test_bloc.dart';
 @immutable
 abstract class TestState {}
 
+class LoadingQuestions extends TestState {}
+
 class QuestionState extends TestState {
   final Question question;
   final int questionNumber;
@@ -27,7 +29,7 @@ class LastQuestion extends QuestionState {
 
 class QuestionError extends TestState {}
 
-class ScoreTable extends TestState{
+class ScoreTable extends TestState {
   final int score;
   final int totalScore;
   final double percentage;
