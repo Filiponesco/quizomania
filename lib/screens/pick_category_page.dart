@@ -33,35 +33,48 @@ class _PickCategoryPageState extends State<PickCategoryPage> {
     return Scaffold(
         body: Stack(children: <Widget>[
       Center(
-        child: Image(
-          image: AssetImage('assets/images/logo_quiz.png'),
-          width:200
-        ),
+        child:
+            Image(image: AssetImage('assets/images/logo_quiz.png'), width: 200),
       ),
-      BlocBuilder<CategoryBloc, CategoryState>(
-        bloc: _categoryBloc,
-        builder: (context, state) {
-          if (state is LoadingCategories) {
-            return Center(child: CircularProgressIndicator());
-          } else if (state is CategoryList) {
-            return GridView.builder(
-              gridDelegate:
-                  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-              itemBuilder: (_, index) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: OneCategoryCard(
-                  nameCategory: state.categories[index].category,
-                  icon: Icons.category,
-                  onTap: () =>
-                      _onPickCategory(state.categories[index], context),
-                ),
-              ),
-              itemCount: state.categories.length,
-            );
-          } else {
-            return Center(child: Text('state is: ${state.toString()}'));
-          }
-        },
+      Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: BlocBuilder<CategoryBloc, CategoryState>(
+          bloc: _categoryBloc,
+          builder: (context, state) {
+            if (state is LoadingTest) {
+              return Center(child: CircularProgressIndicator());
+            } else if (state is CategoryList) {
+              return ListView.builder(
+                itemBuilder: (_, index) {
+                  Color bgColor;
+                  if(index % 4 == 0)
+                    bgColor = Colors.pink;
+                  else if(index % 4 == 1){
+                    bgColor = Colors.orange;
+                  }
+                  else if(index % 4 == 2){
+                    bgColor = Colors.blue;
+                  }
+                  else if(index % 4 == 3){
+                    bgColor = Colors.green;
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.all(3.0),
+                    child: OneCategoryCard(
+                      nameCategory: state.categories[index].category,
+                      backgroundColor: bgColor,
+                      onTap: () =>
+                          _onPickCategory(state.categories[index], context),
+                    ),
+                  );
+                },
+                itemCount: state.categories.length,
+              );
+            } else {
+              return Center(child: Text('state is: ${state.toString()}'));
+            }
+          },
+        ),
       ),
     ]));
   }

@@ -11,17 +11,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/',
-      routes: {
-        // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (context) => MyHomePage(),
-        // When navigating to the "/second" route, build the SecondScreen widget.
-        '/category': (context) => PickCategoryPage(),
-        '/question': (context) => QuestionPage(),
-      },
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      home: MyHomePage()
     );
   }
 }
@@ -40,13 +33,13 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          //i dont knwo why this button it is not on center!
+          //i dont know why this button it is not on center!
           SizedBox(width:25),
           BigButton(
             color: Colors.blue,
             text: 'Start',
             onPressed: () {
-              Navigator.of(context).pushNamed('/category');
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> PickCategoryPage()));
             },
           ),
         ],

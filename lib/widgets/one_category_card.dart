@@ -1,33 +1,41 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class OneCategoryCard extends StatelessWidget {
-  final IconData icon;
   final String nameCategory;
   final Function onTap;
-  OneCategoryCard({this.icon, @required this.nameCategory, this.onTap});
+  final Color backgroundColor;
+  OneCategoryCard({@required this.nameCategory, this.onTap, this.backgroundColor});
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Color.fromARGB(245, 255, 255, 255),
+      color: backgroundColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30),
     ),
-      elevation: 4,
+      elevation: 3,
       child: InkWell(
         splashColor: Colors.blue.withAlpha(150),
         customBorder: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
         onTap: onTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(icon, size: 80,),
-            Text(nameCategory, style: TextStyle(
-              fontSize: 20,
-            ),)
-          ],
+        child:
+            Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: AutoSizeText(nameCategory, style: TextStyle(
+                  fontSize: 25,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Balsamiq',
+                  letterSpacing: 1
+                ),
+                  maxLines: 1,
         ),
+              ),
+            ),
       ),
     );
   }

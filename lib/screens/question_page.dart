@@ -5,6 +5,7 @@ import 'package:quizomania/model/category.dart';
 import 'package:quizomania/model/enums_difficulty_answer.dart';
 import 'package:quizomania/model/question.dart';
 import 'package:quizomania/model/test/test_bloc.dart';
+import 'package:quizomania/screens/confirm_dialog.dart';
 import 'package:quizomania/screens/result_page.dart';
 import 'package:quizomania/widgets/answer_field_check.dart';
 import 'package:quizomania/widgets/big_button.dart';
@@ -32,86 +33,107 @@ class _QuestionPageState extends State<QuestionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TestBloc, TestState>(
-      bloc: _testBloc,
-      builder: (context, TestState state) {
-        if (state is FirstQuestion) {
-          return Scaffold(
-              floatingActionButton: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  MyBackButton(
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  BigButton(
-                    text: 'Next',
-                    onPressed: () => _testBloc.add(NextQuestion()),
-                  ),
-                ],
-              ),
-              backgroundColor: Color.fromARGB(255, 37, 44, 73),
-              body: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 25, right: 25, top: 40, bottom: 15),
-                  child: QuestionPageContent(
-                    questionNumber: state.questionNumber,
-                    question: state.question,
-                  )));
-        } else if (state is MiddleQuestion) {
-          return Scaffold(
-              floatingActionButton: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  MyBackButton(
-                    onPressed: () => _testBloc.add(PreviousQuestion()),
-                  ),
-                  BigButton(
-                    text: 'Next',
-                    onPressed: () => _testBloc.add(NextQuestion()),
-                  ),
-                ],
-              ),
-              backgroundColor: Color.fromARGB(255, 37, 44, 73),
-              body: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 25, right: 25, top: 40, bottom: 15),
-                  child: QuestionPageContent(
-                    questionNumber: state.questionNumber,
-                    question: state.question,
-                  )));
-        } else if (state is LastQuestion) {
-          return Scaffold(
-              floatingActionButton: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  MyBackButton(
-                    onPressed: () => _testBloc.add(PreviousQuestion()),
-                  ),
-                  BigButton(
-                    color: Colors.green,
-                    text: 'Finish',
-                    onPressed: () => _testBloc.add(EndTest()),
-                  ),
-                ],
-              ),
-              backgroundColor: Color.fromARGB(255, 37, 44, 73),
-              body: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 25, right: 25, top: 40, bottom: 15),
-                  child: QuestionPageContent(
-                    questionNumber: state.questionNumber,
-                    question: state.question,
-                  )));
-        } else if (state is ScoreTable) {
-          return ResultPage(
-            score: state.score,
-            totalScore: state.totalScore,
-            percentage: state.percentage,
-          );
-        } else {
-          return Container();
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        final value = await showDialog<bool>(
+            context: context,
+            builder: (context) {
+              return ConfirmDialog(content: 'Are you sure you want to exit this quiz?\nYou can not return to this place and you will not see the results.',);
+            });
+        return value == true;
       },
+      child: BlocListener<TestBloc, TestState>(
+        bloc: _testBloc,
+        listener: (context, state) {
+          if (state is ScoreTable) {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ResultPage(
+                          score: state.score,
+                          totalScore: state.totalScore,
+                          percentage: state.percentage,
+                        )),
+                (route) => false);
+          }
+        },
+        child: BlocBuilder<TestBloc, TestState>(
+          bloc: _testBloc,
+          builder: (context, TestState state) {
+            if (state is FirstQuestion) {
+              return Scaffold(
+                  floatingActionButton: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      MyBackButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icons.close,
+                      ),
+                      BigButton(
+                        text: 'Next',
+                        onPressed: () => _testBloc.add(NextQuestion()),
+                      ),
+                    ],
+                  ),
+                  backgroundColor: Color.fromARGB(255, 37, 44, 73),
+                  body: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 25, right: 25, top: 40, bottom: 15),
+                      child: QuestionPageContent(
+                        questionNumber: state.questionNumber,
+                        question: state.question,
+                      )));
+            } else if (state is MiddleQuestion) {
+              return Scaffold(
+                  floatingActionButton: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      MyBackButton(
+                        onPressed: () => _testBloc.add(PreviousQuestion()),
+                      ),
+                      BigButton(
+                        text: 'Next',
+                        onPressed: () => _testBloc.add(NextQuestion()),
+                      ),
+                    ],
+                  ),
+                  backgroundColor: Color.fromARGB(255, 37, 44, 73),
+                  body: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 25, right: 25, top: 40, bottom: 15),
+                      child: QuestionPageContent(
+                        questionNumber: state.questionNumber,
+                        question: state.question,
+                      )));
+            } else if (state is LastQuestion) {
+              return Scaffold(
+                  floatingActionButton: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      MyBackButton(
+                        onPressed: () => _testBloc.add(PreviousQuestion()),
+                      ),
+                      BigButton(
+                        color: Colors.green,
+                        text: 'Finish',
+                        onPressed: () => _testBloc.add(EndTest()),
+                      ),
+                    ],
+                  ),
+                  backgroundColor: Color.fromARGB(255, 37, 44, 73),
+                  body: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 25, right: 25, top: 40, bottom: 15),
+                      child: QuestionPageContent(
+                        questionNumber: state.questionNumber,
+                        question: state.question,
+                      )));
+            } else {
+              return Container();
+            }
+          },
+        ),
+      ),
     );
   }
 
