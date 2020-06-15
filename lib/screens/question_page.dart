@@ -6,6 +6,7 @@ import 'package:quizomania/model/enums_difficulty_answer.dart';
 import 'package:quizomania/model/question.dart';
 import 'package:quizomania/model/test/test_bloc.dart';
 import 'package:quizomania/screens/confirm_dialog.dart';
+import 'package:quizomania/screens/error_dialog.dart';
 import 'package:quizomania/screens/result_page.dart';
 import 'package:quizomania/widgets/answer_field_check.dart';
 import 'package:quizomania/widgets/big_button.dart';
@@ -79,10 +80,7 @@ class _QuestionPageState extends State<QuestionPage> {
                   floatingActionButton: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      MyBackButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: Icons.close,
-                      ),
+                      SizedBox(width: 90,),
                       BigButton(
                         text: 'Next',
                         onPressed: ()=>_onPressedRightBtn(state, ),
@@ -153,6 +151,11 @@ class _QuestionPageState extends State<QuestionPage> {
                   backgroundColor: Color.fromARGB(255, 37, 44, 73),
                 body: Center(child: CircularProgressIndicator(),)
               );
+            } else if(state is QuestionError){
+              return Scaffold(
+                  backgroundColor: Color.fromARGB(255, 37, 44, 73),
+                  body: Center(child: ErrorDialog(),)
+              );
             }
             else {
               return Container();
@@ -187,8 +190,7 @@ class _QuestionPageContentState extends State<QuestionPageContent> {
 
   void _onTapFieldCheck(Answer answer, answerText) {
     //nie wiem co w id wpisać
-    widget.testBloc.add(AnswerQuestion(widget.questionNumber, widget.question.correctAnswer, 0));
-    print('${widget.testBloc.hashCode}');
+    //widget.testBloc.add(AnswerQuestion(widget.questionNumber, widget.question.correctAnswer, 0));
     setState(() {
       _selectedAnswer = answer;
     });
