@@ -41,7 +41,7 @@ class _PickCategoryPageState extends State<PickCategoryPage> {
         child: BlocBuilder<CategoryBloc, CategoryState>(
           bloc: _categoryBloc,
           builder: (context, state) {
-            if (state is LoadingTest) {
+            if (state is LoadingCategories) {
               return Center(child: CircularProgressIndicator());
             } else if (state is CategoryList) {
               return ListView.builder(

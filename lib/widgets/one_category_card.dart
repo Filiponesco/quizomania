@@ -32,7 +32,7 @@ class OneCategoryCard extends StatelessWidget {
                   fontFamily: 'Balsamiq',
                   letterSpacing: 1
                 ),
-                  maxLines: 1,
+                  maxLines: 2,
         ),
               ),
             ),

@@ -34,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           //i dont know why this button it is not on center!
-          SizedBox(width:25),
+          SizedBox(width:40),
           BigButton(
             color: Colors.blue,
             text: 'Start',

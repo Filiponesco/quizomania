@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
@@ -50,9 +51,11 @@ class _SpecificationQuestionsDialogState
               padding: const EdgeInsets.only(
                   top: 30, left: 25, right: 25, bottom: 20),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(
+                  AutoSizeText(
                     '${widget.selectedCategory.category}',
+                    maxLines: 2,
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 25,
@@ -78,9 +81,7 @@ class _SpecificationQuestionsDialogState
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 15,
-                  ),
+
                   DifficultyButton(
                     text: 'Easy',
                     color: Colors.blue,
@@ -134,9 +135,6 @@ class _SpecificationQuestionsDialogState
                 minValue: 1,
                 maxValue: 25,
                 onChanged: (num) => _changeNumberOfQuestion(num)),
-            SizedBox(
-              height: 10,
-            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -157,8 +155,8 @@ class _SpecificationQuestionsDialogState
                                       builder: (context) => QuestionPage(
                                             currentCategory:
                                                 widget.selectedCategory,
-                                            difficulty: DifficultyLevel.hard,
-                                            quantity: 10,//TODO - change to real values
+                                            difficulty: _pickedLevel,
+                                            quantity: _numberOfQuestion,
                                           )))
                               .then((_) => Navigator.of(context).pop());
                         },

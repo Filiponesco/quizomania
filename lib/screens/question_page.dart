@@ -25,6 +25,18 @@ class QuestionPage extends StatefulWidget {
 class _QuestionPageState extends State<QuestionPage> {
   TestBloc _testBloc;
 
+  void _onPressedRightBtn(TestState state){
+    if(state is FirstQuestion){
+      _testBloc.add(NextQuestion());
+    }
+    else if(state is MiddleQuestion){
+      _testBloc.add(NextQuestion());
+
+    } else if(state is LastQuestion){
+      _testBloc.add(EndTest());
+    }
+  }
+
   @override
   void initState() {
     _testBloc = TestBloc()..add(LoadTest(widget.currentCategory.id, widget.difficulty, widget.quantity));
@@ -55,6 +67,8 @@ class _QuestionPageState extends State<QuestionPage> {
                           percentage: state.percentage,
                         )),
                 (route) => false);
+          } else if (state is AnswerQuestion){
+              print('answer: ${state.toString()}');
           }
         },
         child: BlocBuilder<TestBloc, TestState>(
@@ -71,7 +85,7 @@ class _QuestionPageState extends State<QuestionPage> {
                       ),
                       BigButton(
                         text: 'Next',
-                        onPressed: () => _testBloc.add(NextQuestion()),
+                        onPressed: ()=>_onPressedRightBtn(state, ),
                       ),
                     ],
                   ),
@@ -82,6 +96,8 @@ class _QuestionPageState extends State<QuestionPage> {
                       child: QuestionPageContent(
                         questionNumber: state.questionNumber,
                         question: state.question,
+                        quantity: widget.quantity,
+                        testBloc: _testBloc
                       )));
             } else if (state is MiddleQuestion) {
               return Scaffold(
@@ -93,7 +109,7 @@ class _QuestionPageState extends State<QuestionPage> {
                       ),
                       BigButton(
                         text: 'Next',
-                        onPressed: () => _testBloc.add(NextQuestion()),
+                        onPressed: ()=>_onPressedRightBtn(state),
                       ),
                     ],
                   ),
@@ -104,6 +120,8 @@ class _QuestionPageState extends State<QuestionPage> {
                       child: QuestionPageContent(
                         questionNumber: state.questionNumber,
                         question: state.question,
+                          quantity: widget.quantity,
+                        testBloc: _testBloc
                       )));
             } else if (state is LastQuestion) {
               return Scaffold(
@@ -116,7 +134,7 @@ class _QuestionPageState extends State<QuestionPage> {
                       BigButton(
                         color: Colors.green,
                         text: 'Finish',
-                        onPressed: () => _testBloc.add(EndTest()),
+                        onPressed: ()=>_onPressedRightBtn(state),
                       ),
                     ],
                   ),
@@ -127,8 +145,16 @@ class _QuestionPageState extends State<QuestionPage> {
                       child: QuestionPageContent(
                         questionNumber: state.questionNumber,
                         question: state.question,
+                        quantity: widget.quantity,
+                          testBloc: _testBloc
                       )));
-            } else {
+            } else if(state is LoadingQuestions){
+              return Scaffold(
+                  backgroundColor: Color.fromARGB(255, 37, 44, 73),
+                body: Center(child: CircularProgressIndicator(),)
+              );
+            }
+            else {
               return Container();
             }
           },
@@ -147,8 +173,10 @@ class _QuestionPageState extends State<QuestionPage> {
 class QuestionPageContent extends StatefulWidget {
   final Question question;
   final int questionNumber;
+  final int quantity;
+  final TestBloc testBloc;
 
-  QuestionPageContent({this.questionNumber = 0, this.question});
+  QuestionPageContent({this.questionNumber = 0, this.question, this.quantity, this.testBloc/*this.onChangeSelectedAnswer*/});
 
   @override
   _QuestionPageContentState createState() => _QuestionPageContentState();
@@ -157,7 +185,10 @@ class QuestionPageContent extends StatefulWidget {
 class _QuestionPageContentState extends State<QuestionPageContent> {
   Answer _selectedAnswer;
 
-  void _onTapFieldCheck(answer) {
+  void _onTapFieldCheck(Answer answer, answerText) {
+    //nie wiem co w id wpisać
+    widget.testBloc.add(AnswerQuestion(widget.questionNumber, widget.question.correctAnswer, 0));
+    print('${widget.testBloc.hashCode}');
     setState(() {
       _selectedAnswer = answer;
     });
@@ -172,6 +203,7 @@ class _QuestionPageContentState extends State<QuestionPageContent> {
       children: <Widget>[
         TitleQuestionPage(
           questionNumber: widget.questionNumber + 1,
+          quantity: widget.quantity,
         ),
         Divider(
           color: Colors.grey,
@@ -187,25 +219,25 @@ class _QuestionPageContentState extends State<QuestionPageContent> {
         AnswerFieldCheck(
           numberOfAnswer: Answer.first,
           textAnswer: '${widget.question.correctAnswer}',
-          onTap: () => _onTapFieldCheck(Answer.first),
+          onTap: () => _onTapFieldCheck(Answer.first, widget.question.correctAnswer),
           selectedAnswer: _selectedAnswer,
         ),
         AnswerFieldCheck(
           numberOfAnswer: Answer.second,
           textAnswer: '${widget.question.incorrectAnswers[0]}',
-          onTap: () => _onTapFieldCheck(Answer.second),
+          onTap: () => _onTapFieldCheck(Answer.second, widget.question.incorrectAnswers[0]),
           selectedAnswer: _selectedAnswer,
         ),
         AnswerFieldCheck(
           numberOfAnswer: Answer.third,
           textAnswer: '${widget.question.incorrectAnswers[1]}',
-          onTap: () => _onTapFieldCheck(Answer.third),
+          onTap: () => _onTapFieldCheck(Answer.third, widget.question.incorrectAnswers[1]),
           selectedAnswer: _selectedAnswer,
         ),
         AnswerFieldCheck(
           numberOfAnswer: Answer.fourth,
           textAnswer: '${widget.question.incorrectAnswers[2]}',
-          onTap: () => _onTapFieldCheck(Answer.fourth),
+          onTap: () => _onTapFieldCheck(Answer.fourth, widget.question.incorrectAnswers[2]),
           selectedAnswer: _selectedAnswer,
         ),
         SizedBox(
@@ -218,8 +250,9 @@ class _QuestionPageContentState extends State<QuestionPageContent> {
 
 class TitleQuestionPage extends StatelessWidget {
   final int questionNumber;
+  final int quantity;
 
-  const TitleQuestionPage({Key key, this.questionNumber = 0}) : super(key: key);
+  const TitleQuestionPage({Key key, this.questionNumber = 0, this.quantity}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -234,7 +267,7 @@ class TitleQuestionPage extends StatelessWidget {
               color: Colors.grey),
         ),
         TextSpan(
-          text: '/10',
+          text: '/$quantity',
           style: TextStyle(
               fontFamily: 'Balsamiq', fontSize: 20, color: Colors.grey),
         )
