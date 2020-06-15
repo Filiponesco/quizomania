@@ -17,7 +17,8 @@ class QuestionPage extends StatefulWidget {
   final DifficultyLevel difficulty;
   final int quantity;
 
-  QuestionPage({@required this.currentCategory, this.difficulty, this.quantity});
+  QuestionPage(
+      {@required this.currentCategory, this.difficulty, this.quantity});
 
   @override
   _QuestionPageState createState() => _QuestionPageState();
@@ -26,21 +27,21 @@ class QuestionPage extends StatefulWidget {
 class _QuestionPageState extends State<QuestionPage> {
   TestBloc _testBloc;
 
-  void _onPressedRightBtn(TestState state){
-    if(state is FirstQuestion){
+  void _onPressedRightBtn(TestState state) {
+    if (state is FirstQuestion) {
       _testBloc.add(NextQuestion());
-    }
-    else if(state is MiddleQuestion){
+    } else if (state is MiddleQuestion) {
       _testBloc.add(NextQuestion());
-
-    } else if(state is LastQuestion){
+    } else if (state is LastQuestion) {
       _testBloc.add(EndTest());
     }
   }
 
   @override
   void initState() {
-    _testBloc = TestBloc()..add(LoadTest(widget.currentCategory.id, widget.difficulty, widget.quantity));
+    _testBloc = TestBloc()
+      ..add(LoadTest(
+          widget.currentCategory.id, widget.difficulty, widget.quantity));
     super.initState();
   }
 
@@ -51,7 +52,10 @@ class _QuestionPageState extends State<QuestionPage> {
         final value = await showDialog<bool>(
             context: context,
             builder: (context) {
-              return ConfirmDialog(content: 'Are you sure you want to exit this quiz?\nYou can not return to this place and you will not see the results.',);
+              return ConfirmDialog(
+                content: 'Are you sure you want to exit this quiz?'
+                    '\nYou can not return to this place and you will not see the results.',
+              );
             });
         return value == true;
       },
@@ -68,8 +72,8 @@ class _QuestionPageState extends State<QuestionPage> {
                           percentage: state.percentage,
                         )),
                 (route) => false);
-          } else if (state is AnswerQuestion){
-              print('answer: ${state.toString()}');
+          } else if (state is AnswerQuestion) {
+            print('answer: ${state.toString()}');
           }
         },
         child: BlocBuilder<TestBloc, TestState>(
@@ -80,10 +84,14 @@ class _QuestionPageState extends State<QuestionPage> {
                   floatingActionButton: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      SizedBox(width: 90,),
+                      SizedBox(
+                        width: 90,
+                      ),
                       BigButton(
                         text: 'Next',
-                        onPressed: ()=>_onPressedRightBtn(state, ),
+                        onPressed: () => _onPressedRightBtn(
+                          state,
+                        ),
                       ),
                     ],
                   ),
@@ -92,11 +100,12 @@ class _QuestionPageState extends State<QuestionPage> {
                       padding: const EdgeInsets.only(
                           left: 25, right: 25, top: 40, bottom: 15),
                       child: QuestionPageContent(
-                        questionNumber: state.questionNumber,
-                        question: state.question,
-                        quantity: widget.quantity,
-                        testBloc: _testBloc
-                      )));
+                          questionNumber: state.questionNumber,
+                          question: state.question,
+                          quantity: widget.quantity,
+                          testBloc: _testBloc,
+                          answered: state.question.answered ?? false,
+                          answerId: state.question.answerId)));
             } else if (state is MiddleQuestion) {
               return Scaffold(
                   floatingActionButton: Row(
@@ -107,7 +116,7 @@ class _QuestionPageState extends State<QuestionPage> {
                       ),
                       BigButton(
                         text: 'Next',
-                        onPressed: ()=>_onPressedRightBtn(state),
+                        onPressed: () => _onPressedRightBtn(state),
                       ),
                     ],
                   ),
@@ -116,11 +125,12 @@ class _QuestionPageState extends State<QuestionPage> {
                       padding: const EdgeInsets.only(
                           left: 25, right: 25, top: 40, bottom: 15),
                       child: QuestionPageContent(
-                        questionNumber: state.questionNumber,
-                        question: state.question,
+                          questionNumber: state.questionNumber,
+                          question: state.question,
                           quantity: widget.quantity,
-                        testBloc: _testBloc
-                      )));
+                          testBloc: _testBloc,
+                          answered: state.question.answered ?? false,
+                          answerId: state.question.answerId)));
             } else if (state is LastQuestion) {
               return Scaffold(
                   floatingActionButton: Row(
@@ -132,7 +142,7 @@ class _QuestionPageState extends State<QuestionPage> {
                       BigButton(
                         color: Colors.green,
                         text: 'Finish',
-                        onPressed: ()=>_onPressedRightBtn(state),
+                        onPressed: () => _onPressedRightBtn(state),
                       ),
                     ],
                   ),
@@ -141,23 +151,25 @@ class _QuestionPageState extends State<QuestionPage> {
                       padding: const EdgeInsets.only(
                           left: 25, right: 25, top: 40, bottom: 15),
                       child: QuestionPageContent(
-                        questionNumber: state.questionNumber,
-                        question: state.question,
-                        quantity: widget.quantity,
-                          testBloc: _testBloc
-                      )));
-            } else if(state is LoadingQuestions){
+                          questionNumber: state.questionNumber,
+                          question: state.question,
+                          quantity: widget.quantity,
+                          testBloc: _testBloc,
+                          answered: state.question.answered ?? false,
+                          answerId: state.question.answerId)));
+            } else if (state is LoadingQuestions) {
               return Scaffold(
                   backgroundColor: Color.fromARGB(255, 37, 44, 73),
-                body: Center(child: CircularProgressIndicator(),)
-              );
-            } else if(state is QuestionError){
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ));
+            } else if (state is QuestionError) {
               return Scaffold(
                   backgroundColor: Color.fromARGB(255, 37, 44, 73),
-                  body: Center(child: ErrorDialog(),)
-              );
-            }
-            else {
+                  body: Center(
+                    child: ErrorDialog(),
+                  ));
+            } else {
               return Container();
             }
           },
@@ -178,8 +190,16 @@ class QuestionPageContent extends StatefulWidget {
   final int questionNumber;
   final int quantity;
   final TestBloc testBloc;
+  final bool answered;
+  final int answerId;
 
-  QuestionPageContent({this.questionNumber = 0, this.question, this.quantity, this.testBloc/*this.onChangeSelectedAnswer*/});
+  QuestionPageContent(
+      {this.questionNumber = 0,
+      this.question,
+      this.quantity,
+      this.testBloc /*this.onChangeSelectedAnswer*/,
+      this.answered,
+      this.answerId});
 
   @override
   _QuestionPageContentState createState() => _QuestionPageContentState();
@@ -190,14 +210,39 @@ class _QuestionPageContentState extends State<QuestionPageContent> {
 
   void _onTapFieldCheck(Answer answer, answerText) {
     //nie wiem co w id wpisać
-    //widget.testBloc.add(AnswerQuestion(widget.questionNumber, widget.question.correctAnswer, 0));
+    if (answer == Answer.first)
+      widget.testBloc.add(AnswerQuestion(
+          widget.questionNumber, widget.question.correctAnswer, 0));
+    else if (answer == Answer.second)
+      widget.testBloc.add(AnswerQuestion(
+          widget.questionNumber, widget.question.incorrectAnswers[0], 1));
+    else if (answer == Answer.third)
+      widget.testBloc.add(AnswerQuestion(
+          widget.questionNumber, widget.question.incorrectAnswers[1], 2));
+    else
+      widget.testBloc.add(AnswerQuestion(
+          widget.questionNumber, widget.question.incorrectAnswers[2], 3));
     setState(() {
-      _selectedAnswer = answer;
+      if (widget.question.answered) {
+        if (widget.question.answerId == 0)
+          _selectedAnswer = Answer.first;
+        else if (widget.question.answerId == 1) {
+          _selectedAnswer = Answer.second;
+        } else if (widget.question.answerId == 2) {
+          _selectedAnswer = Answer.third;
+        } else if (widget.question.answerId == 3) {
+          _selectedAnswer = Answer.fourth;
+        }
+      } else {
+        _selectedAnswer = Answer.nothing;
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if(!widget.answered)
+      _selectedAnswer = Answer.nothing;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
@@ -221,25 +266,29 @@ class _QuestionPageContentState extends State<QuestionPageContent> {
         AnswerFieldCheck(
           numberOfAnswer: Answer.first,
           textAnswer: '${widget.question.correctAnswer}',
-          onTap: () => _onTapFieldCheck(Answer.first, widget.question.correctAnswer),
+          onTap: () =>
+              _onTapFieldCheck(Answer.first, widget.question.correctAnswer),
           selectedAnswer: _selectedAnswer,
         ),
         AnswerFieldCheck(
           numberOfAnswer: Answer.second,
           textAnswer: '${widget.question.incorrectAnswers[0]}',
-          onTap: () => _onTapFieldCheck(Answer.second, widget.question.incorrectAnswers[0]),
+          onTap: () => _onTapFieldCheck(
+              Answer.second, widget.question.incorrectAnswers[0]),
           selectedAnswer: _selectedAnswer,
         ),
         AnswerFieldCheck(
           numberOfAnswer: Answer.third,
           textAnswer: '${widget.question.incorrectAnswers[1]}',
-          onTap: () => _onTapFieldCheck(Answer.third, widget.question.incorrectAnswers[1]),
+          onTap: () => _onTapFieldCheck(
+              Answer.third, widget.question.incorrectAnswers[1]),
           selectedAnswer: _selectedAnswer,
         ),
         AnswerFieldCheck(
           numberOfAnswer: Answer.fourth,
           textAnswer: '${widget.question.incorrectAnswers[2]}',
-          onTap: () => _onTapFieldCheck(Answer.fourth, widget.question.incorrectAnswers[2]),
+          onTap: () => _onTapFieldCheck(
+              Answer.fourth, widget.question.incorrectAnswers[2]),
           selectedAnswer: _selectedAnswer,
         ),
         SizedBox(
@@ -254,7 +303,8 @@ class TitleQuestionPage extends StatelessWidget {
   final int questionNumber;
   final int quantity;
 
-  const TitleQuestionPage({Key key, this.questionNumber = 0, this.quantity}) : super(key: key);
+  const TitleQuestionPage({Key key, this.questionNumber = 0, this.quantity})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
