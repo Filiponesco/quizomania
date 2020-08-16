@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:quizomania/model/question.dart';
+import 'package:quizomania/model/question_model.dart';
 
 import 'category.dart';
 import 'package:http/http.dart' as http;
@@ -13,11 +13,11 @@ class Repository {
     return result;
   }
 
-  Future<List<Question>> getQuestions(int quantity, String difficulty, int categoryId) async{
+  Future<List<QuestionModel>> getQuestions(int quantity, String difficulty, int categoryId) async{
     var url = "https://opentdb.com/api.php?amount=$quantity&category=$categoryId&difficulty=$difficulty&type=multiple";
     var response = await http.get(url);
     var xd = json.decode(response.body);
-    List<Question> result = Question.listFromJson(xd['results']);
+    List<QuestionModel> result = QuestionModel.listFromJson(xd['results']);
     return result;
   }
 }

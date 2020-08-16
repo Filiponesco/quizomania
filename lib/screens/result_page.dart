@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:quizomania/main.dart';
 import 'package:quizomania/screens/confirm_dialog.dart';
 import 'package:quizomania/widgets/big_button.dart';
-import 'package:quizomania/widgets/my_back_button.dart';
 
 class ResultPage extends StatelessWidget {
   //ScoreTable(this.score, this.totalScore, this.percentage);
@@ -116,8 +115,8 @@ class ResultPage extends StatelessWidget {
                           showDialog(context: context,
                               builder: (context){
                             return ConfirmDialog(
+                              onPressYes: SystemNavigator.pop,
                                 content: 'Are you sure you want to exit app?');
-                            //SystemNavigator.pop();
                           }
                           );
                         },

@@ -1,28 +1,38 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:quizomania/model/question_model.dart';
 
-part 'question.g.dart';
-
-@JsonSerializable()
 class Question {
-  final String category;
-  final String type;
-  final String difficulty;
   final String question;
-  @JsonKey(name: 'correct_answer')
-  final String correctAnswer;
-  @JsonKey(name: 'incorrect_answers')
-  final List<String> incorrectAnswers;
-  bool answered = false;
-  int answerId;
+  final List<String> answers;
+  final int correctAnswerIndex;
+  int chosenAnswerIndex;
+  final int numberOfQuestion;
 
-  Question(this.category, this.type, this.difficulty, this.question,
-      this.correctAnswer, this.incorrectAnswers);
+  get isCorrect {
+    if (chosenAnswerIndex == null) return false;
+    if (correctAnswerIndex == chosenAnswerIndex)
+      return true;
+    else
+      return false;
+  }
 
-  factory Question.fromJson(Map<String, dynamic> json) => _$QuestionFromJson(json);
-  Map<String, dynamic> toJson() => _$QuestionToJson(this);
+  Question(
+      {this.question,
+      this.answers,
+      this.correctAnswerIndex,
+      this.numberOfQuestion});
 
-  static List<Question> listFromJson(List<dynamic> list) =>
-      list == null
-          ? List<Question>()
-          : list.map<Question>((dynamic value) => Question.fromJson(value)).toList();
+  factory Question.fromQuestionModel(QuestionModel model, numberOfQuestion) {
+    final List<String> answers = []
+      ..add(model.correctAnswer)
+      ..addAll(model.incorrectAnswers)
+      ..shuffle();
+
+    final index = answers.indexOf(model.correctAnswer);
+
+    return Question(
+        question: model.question,
+        answers: answers,
+        correctAnswerIndex: index,
+        numberOfQuestion: numberOfQuestion);
+  }
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:quizomania/widgets/big_button.dart';
+import 'package:flutter/services.dart';
 
 class ConfirmDialog extends StatelessWidget {
   final String content;
-  ConfirmDialog({this.content});
+  final onPressYes;
+
+  ConfirmDialog({this.content, this.onPressYes});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,11 @@ class ConfirmDialog extends StatelessWidget {
           child: Text('Yes, exit',
               style: TextStyle(fontFamily: 'Balsamiq')),
           onPressed: () {
-            Navigator.of(context).pop(true);
+            if (onPressYes == null) {
+              Navigator.of(context).pop(true);
+            }
+            else
+              SystemNavigator.pop();
           },
         ),
       ],

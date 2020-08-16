@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quizomania/model/category.dart';
 import 'package:quizomania/model/category/category_bloc.dart';
+import 'package:quizomania/model/setup_question_bloc/setup_question_bloc.dart';
 import 'package:quizomania/screens/error_dialog.dart';
 import 'package:quizomania/screens/pick_specification_questions_dialog.dart';
 import 'package:quizomania/widgets/one_category_card.dart';
@@ -18,8 +19,12 @@ class _PickCategoryPageState extends State<PickCategoryPage> {
     print('selected category id: ${category.id}');
     showDialog(
         context: context,
-        builder: (BuildContext context) => SpecificationQuestionsDialog(
-              selectedCategory: category,
+        builder: (BuildContext context) => BlocProvider(
+              create: (BuildContext context) =>
+                  SetupQuestionBloc(),
+              child: SpecificationQuestionsDialog(
+                category: category,
+              ),
             ));
   }
 
@@ -48,15 +53,13 @@ class _PickCategoryPageState extends State<PickCategoryPage> {
               return ListView.builder(
                 itemBuilder: (_, index) {
                   Color bgColor;
-                  if(index % 4 == 0)
+                  if (index % 4 == 0)
                     bgColor = Colors.pink;
-                  else if(index % 4 == 1){
+                  else if (index % 4 == 1) {
                     bgColor = Colors.orange;
-                  }
-                  else if(index % 4 == 2){
+                  } else if (index % 4 == 2) {
                     bgColor = Colors.blue;
-                  }
-                  else if(index % 4 == 3){
+                  } else if (index % 4 == 3) {
                     bgColor = Colors.green;
                   }
                   return Padding(
@@ -71,10 +74,9 @@ class _PickCategoryPageState extends State<PickCategoryPage> {
                 },
                 itemCount: state.categories.length,
               );
-            } else if(state is CategoryError) {
+            } else if (state is CategoryError) {
               return ErrorDialog();
-            }
-            else {
+            } else {
               return Center(child: Text('state is: ${state.toString()}'));
             }
           },

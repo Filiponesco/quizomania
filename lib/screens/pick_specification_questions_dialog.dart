@@ -1,169 +1,218 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:quizomania/model/category.dart';
 import 'package:quizomania/model/enums_difficulty_answer.dart';
+import 'package:quizomania/model/setup_question_bloc/setup_question_bloc.dart';
+import 'package:quizomania/model/question_bloc/question_bloc.dart';
 import 'package:quizomania/screens/question_page.dart';
 import 'package:quizomania/widgets/my_back_button.dart';
 import 'package:quizomania/widgets/big_button.dart';
 import 'package:quizomania/widgets/difficulty_button.dart';
 
-class SpecificationQuestionsDialog extends StatefulWidget {
-  final Category selectedCategory;
+class SpecificationQuestionsDialog extends StatelessWidget {
+  final Category category;
 
-  SpecificationQuestionsDialog({@required this.selectedCategory});
-
-  @override
-  _SpecificationQuestionsDialogState createState() =>
-      _SpecificationQuestionsDialogState();
-}
-
-class _SpecificationQuestionsDialogState
-    extends State<SpecificationQuestionsDialog> {
-  DifficultyLevel _pickedLevel;
-  int _numberOfQuestion = 7;
-
-  void _onPickDifficulty(DifficultyLevel level) {
-    setState(() {
-      _pickedLevel = level;
-    });
-  }
-
-  void _changeNumberOfQuestion(int pickedNumber) {
-    setState(() {
-      _numberOfQuestion = pickedNumber;
-    });
-  }
+  SpecificationQuestionsDialog({this.category});
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(
-                  top: 30, left: 25, right: 25, bottom: 20),
-              child: Column(
+    return BlocListener<SetupQuestionBloc, SetupQuestionState>(
+      listener: (context, state) {
+        if (state is ClosedDialog) {
+          Navigator.of(context).pop();
+        } else if (state is StartedQuiz) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return BlocProvider(
+              create: (context) => QuestionBloc(
+                currentCategory: category,
+                quantity: state.numberOfQuestions,
+                difficulty: state.difficultyLevel,
+              ),
+              child: QuestionPage(),
+            );
+          })).then((_) => Navigator.of(context).pop());
+        }
+      },
+      child: Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 30, left: 25, right: 25, bottom: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    AutoSizeText(
+                      '${category.category}',
+                      maxLines: 2,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Balsamiq'),
+                    ),
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: TextStyle(fontSize: 21, fontFamily: 'Balsamiq'),
+                        children: [
+                          TextSpan(
+                              text: "\nSelect the ",
+                              style: TextStyle(color: Colors.black)),
+                          TextSpan(
+                            text: "difficulty",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                          TextSpan(
+                              text: " \nof questions ",
+                              style: TextStyle(color: Colors.black)),
+                        ],
+                      ),
+                    ),
+                    DifficultyChoose(),
+                  ],
+                ),
+              ),
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: TextStyle(fontSize: 21, fontFamily: 'Balsamiq'),
+                  children: [
+                    TextSpan(
+                        text: "Pick the ",
+                        style: TextStyle(color: Colors.black)),
+                    TextSpan(
+                      text: "number",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
+                    ),
+                    TextSpan(
+                        text: " \nof questions ",
+                        style: TextStyle(color: Colors.black)),
+                  ],
+                ),
+              ),
+              BlocBuilder<SetupQuestionBloc, SetupQuestionState>(
+                  condition: (previous, current) {
+                if (previous is SetupQuestionInitial &&
+                    current is SetupQuestionInitial) {
+                  if (previous.numberOfQuestions != current.numberOfQuestions)
+                    return true;
+                  else
+                    return false;
+                } else
+                  return false;
+              }, builder: (context, state) {
+                if (state is SetupQuestionInitial) {
+                  debugPrint('$runtimeType: rebuild: numberPicker');
+                  return NumberPicker.horizontal(
+                      initialValue: state.numberOfQuestions,
+                      minValue: 1,
+                      maxValue: 10,
+                      onChanged: (num) {
+                        context
+                            .bloc<SetupQuestionBloc>()
+                            .add(PickNumberOfQuestion(numberOfQuestion: num));
+                      });
+                } else {
+                  return Container();
+                }
+              }),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  AutoSizeText(
-                    '${widget.selectedCategory.category}',
-                    maxLines: 2,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Balsamiq'),
+                  MyBackButton(
+                    radius: 30.0,
+                    onPressed: () {
+                      context.bloc<SetupQuestionBloc>().add(CloseDialog());
+                    },
                   ),
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      style: TextStyle(fontSize: 21, fontFamily: 'Balsamiq'),
-                      children: [
-                        TextSpan(
-                            text: "\nSelect the ",
-                            style: TextStyle(color: Colors.black)),
-                        TextSpan(
-                          text: "difficulty",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.black),
-                        ),
-                        TextSpan(
-                            text: " \nof questions ",
-                            style: TextStyle(color: Colors.black)),
-                      ],
-                    ),
-                  ),
-
-                  DifficultyButton(
-                    text: 'Easy',
+                  BigButton(
+                    radius: 30.0,
+                    text: 'Start',
                     color: Colors.blue,
-                    onPressed: _pickedLevel == DifficultyLevel.easy
-                        ? null
-                        : () => _onPickDifficulty(DifficultyLevel.easy),
+                    onPressed: () {
+                      context.bloc<SetupQuestionBloc>().add(GoToQuiz());
+                    },
                   ),
-                  SizedBox(
-                    height: 3,
-                  ),
-                  DifficultyButton(
-                    text: 'Medium',
-                    color: Colors.orange,
-                    onPressed: _pickedLevel == DifficultyLevel.medium
-                        ? null
-                        : () => _onPickDifficulty(DifficultyLevel.medium),
-                  ),
-                  SizedBox(
-                    height: 3,
-                  ),
-                  DifficultyButton(
-                    text: 'Hard',
-                    color: Colors.red,
-                    onPressed: _pickedLevel == DifficultyLevel.hard
-                        ? null
-                        : () => _onPickDifficulty(DifficultyLevel.hard),
-                  )
                 ],
+              )
+            ],
+          )),
+    );
+  }
+}
+
+class DifficultyChoose extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SetupQuestionBloc, SetupQuestionState>(
+        condition: (previous, current) {
+      if (previous is SetupQuestionInitial && current is SetupQuestionInitial) {
+        if (previous.difficultyLevel != current.difficultyLevel)
+          return true;
+        else
+          return false;
+      } else
+        return false;
+    }, builder: (context, state) {
+      if (state is SetupQuestionInitial) {
+        debugPrint('$runtimeType: rebuild: difficulty buttons');
+        return Container(
+          child: Column(
+            children: [
+              DifficultyButton(
+                text: 'Easy',
+                color: Colors.blue,
+                onPressed: state.difficultyLevel == DifficultyLevel.easy
+                    ? null
+                    : () {
+                        context.bloc<SetupQuestionBloc>().add(SelectDifficulty(
+                            difficultyLevel: DifficultyLevel.easy));
+                      },
               ),
-            ),
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                style: TextStyle(fontSize: 21, fontFamily: 'Balsamiq'),
-                children: [
-                  TextSpan(
-                      text: "Pick the ", style: TextStyle(color: Colors.black)),
-                  TextSpan(
-                    text: "number",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.black),
-                  ),
-                  TextSpan(
-                      text: " \nof questions ",
-                      style: TextStyle(color: Colors.black)),
-                ],
+              SizedBox(
+                height: 3,
               ),
-            ),
-            NumberPicker.horizontal(
-                initialValue: _numberOfQuestion,
-                minValue: 1,
-                maxValue: 25,
-                onChanged: (num) => _changeNumberOfQuestion(num)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                MyBackButton(
-                  radius: 30.0,
-                  onPressed: () => Navigator.pop(context),
-                ),
-                BigButton(
-                  radius: 30.0,
-                  text: 'Start',
-                  color: Colors.blue,
-                  onPressed: _pickedLevel == null
-                      ? null
-                      : () {
-                          Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => QuestionPage(
-                                            currentCategory:
-                                                widget.selectedCategory,
-                                            difficulty: _pickedLevel,
-                                            quantity: _numberOfQuestion,
-                                          )))
-                              .then((_) => Navigator.of(context).pop());
-                        },
-                ),
-              ],
-            )
-          ],
-        ));
+              DifficultyButton(
+                text: 'Medium',
+                color: Colors.orange,
+                onPressed: state.difficultyLevel == DifficultyLevel.medium
+                    ? null
+                    : () {
+                        context.bloc<SetupQuestionBloc>().add(SelectDifficulty(
+                            difficultyLevel: DifficultyLevel.medium));
+                      },
+              ),
+              SizedBox(
+                height: 3,
+              ),
+              DifficultyButton(
+                text: 'Hard',
+                color: Colors.red,
+                onPressed: state.difficultyLevel == DifficultyLevel.hard
+                    ? null
+                    : () {
+                        context.bloc<SetupQuestionBloc>().add(SelectDifficulty(
+                            difficultyLevel: DifficultyLevel.hard));
+                      },
+              )
+            ],
+          ),
+        );
+      } else
+        return Container();
+    });
   }
 }
