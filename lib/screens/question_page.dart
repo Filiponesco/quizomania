@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:quizomania/blocs/question_blocs/question_bloc.dart';
 import 'package:quizomania/models/question.dart';
 import 'package:quizomania/screens/confirm_dialog.dart';
@@ -37,8 +38,6 @@ class QuestionPage extends StatelessWidget {
                             percentage: state.percentage,
                           )),
                   (route) => false);
-            } else if (state is AnswerQuestion) {
-              print('answer: ${state.toString()}');
             }
           },
           child: Scaffold(
@@ -55,14 +54,22 @@ class QuestionPageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<QuestionBloc, QuestionState>(
+      condition: (previous, current) {
+        //only new page
+        if (previous is LoadingQuestions || current is ScoreTable)
+          return true;
+        else
+          return false;
+      },
       builder: (context, state) {
-        debugPrint('$runtimeType: rebuild');
+        debugPrint('$runtimeType: rebuild all column!');
         if (state is QuestionInitial) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
+              Timer(),
               TitleQuestionPage(
                 //TODO it is good with bloc?
                 quantity: context.bloc<QuestionBloc>().quantity,
@@ -70,21 +77,14 @@ class QuestionPageContent extends StatelessWidget {
               Divider(
                 color: Colors.grey,
               ),
-              BlocBuilder<QuestionBloc, QuestionState>(
-                  builder: (context, state) {
-                debugPrint('$runtimeType: rebuild');
-                if (state is QuestionInitial) {
-                  return AutoSizeText('${state.question.question}',
-                      maxLines: 5,
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Balsamiq',
-                          color: Colors.white,
-                          height: 1.2));
-                } else
-                  return Container();
-              }),
+              AutoSizeText('${state.question.question}',
+                  maxLines: 5,
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Balsamiq',
+                      color: Colors.white,
+                      height: 1.2)),
               //it will rebuild when tap
               AnswerFieldCheck(index: 0),
               AnswerFieldCheck(index: 1),
@@ -102,6 +102,51 @@ class QuestionPageContent extends StatelessWidget {
         } else
           return Container();
       },
+    );
+  }
+}
+
+class Timer extends StatelessWidget {
+  const Timer({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(40),
+        border: Border.all(
+            color: Color.fromARGB(255, 55, 63, 96), width: 3.0),
+      ),
+      child: LinearPercentIndicator(
+        linearGradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            Color.fromARGB(255, 254, 79, 104),
+            Color.fromARGB(255, 186, 118, 255)
+          ],
+        ),
+        backgroundColor: Colors.transparent,
+        lineHeight: 35,
+        percent: 1,
+        linearStrokeCap: LinearStrokeCap.roundAll,
+        animation: true,
+        animationDuration: 3000,
+        alignment: MainAxisAlignment.end,
+        clipLinearGradient: true,
+        padding: EdgeInsets.symmetric(horizontal: 18),
+        center: Text(
+          '23',
+          style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              fontFamily: 'Balsamiq'),
+          textAlign: TextAlign.center,
+        ),
+      ),
     );
   }
 }
@@ -198,8 +243,6 @@ class ActionsButtons extends StatelessWidget {
     return BlocBuilder<QuestionBloc, QuestionState>(
         condition: (previous, current) {
       if (previous is QuestionInitial && current is QuestionInitial) {
-        print(
-            '${previous.question.numberOfQuestion} != ${current.question.numberOfQuestion}');
         if (previous.question.numberOfQuestion !=
             current.question.numberOfQuestion)
           return true;
