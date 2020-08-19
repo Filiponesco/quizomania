@@ -1,4 +1,4 @@
-import 'package:quizomania/model/question_model.dart';
+import 'package:quizomania/models/question_model.dart';
 
 class Question {
   final String question;

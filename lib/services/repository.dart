@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'package:quizomania/model/question_model.dart';
-
-import 'category.dart';
 import 'package:http/http.dart' as http;
+import 'package:quizomania/models/category.dart';
+import 'package:quizomania/models/question_model.dart';
 
 class Repository {
   Future<List<Category>> getAllCategories() async {

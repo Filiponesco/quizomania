@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:quizomania/model/enums_difficulty_answer.dart';
+import 'package:quizomania/models/enums_difficulty_answer.dart';
 
 part 'setup_question_event.dart';
 part 'setup_question_state.dart';

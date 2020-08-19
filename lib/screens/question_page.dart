@@ -1,11 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quizomania/model/category.dart';
-import 'package:quizomania/model/enums_difficulty_answer.dart';
-import 'package:quizomania/model/question.dart';
-import 'package:quizomania/model/question_bloc/question_bloc.dart';
-import 'package:quizomania/model/question_model.dart';
+import 'package:quizomania/blocs/question_blocs/question_bloc.dart';
+import 'package:quizomania/models/question.dart';
 import 'package:quizomania/screens/confirm_dialog.dart';
 import 'package:quizomania/screens/error_dialog.dart';
 import 'package:quizomania/screens/result_page.dart';

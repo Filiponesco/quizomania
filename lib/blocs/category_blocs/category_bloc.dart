@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:quizomania/model/category.dart';
-import 'package:quizomania/model/repository.dart';
+import 'package:quizomania/models/category.dart';
+import 'package:quizomania/services/repository.dart';
 
 part 'category_event.dart';
 

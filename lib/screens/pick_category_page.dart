@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quizomania/model/category.dart';
-import 'package:quizomania/model/category/category_bloc.dart';
-import 'package:quizomania/model/setup_question_bloc/setup_question_bloc.dart';
+import 'package:quizomania/models/category.dart';
+import 'package:quizomania/blocs/category_blocs/category_bloc.dart';
+import 'package:quizomania/blocs/setup_question_blocs/setup_question_bloc.dart';
 import 'package:quizomania/screens/error_dialog.dart';
 import 'package:quizomania/screens/pick_specification_questions_dialog.dart';
 import 'package:quizomania/widgets/one_category_card.dart';
