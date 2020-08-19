@@ -14,6 +14,7 @@ class QuestionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BlocProvider.of<QuestionBloc>(context).add(LoadTest());
+    Size size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
         final value = await showDialog<bool>(
@@ -42,9 +43,34 @@ class QuestionPage extends StatelessWidget {
           },
           child: Scaffold(
               backgroundColor: Color.fromARGB(255, 37, 44, 73),
-              body: Container(
-                padding: EdgeInsets.fromLTRB(25, 40, 25, 15),
-                child: QuestionPageContent(),
+              body: Stack(
+                children: [
+                  Image(
+                    image: AssetImage('assets/images/bg_circle.png'),
+                    width: size.width,
+                  ),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(25, 40, 25, 15),
+                    child: BlocBuilder<QuestionBloc, QuestionState>(
+                        //rebuild only after loading
+                        condition: (previous, current) {
+                      if (previous is LoadingQuestions)
+                        return true;
+                      else
+                        return false;
+                    }, builder: (context, state) {
+                      debugPrint('$runtimeType: rebuild: all question page');
+                      if (state is QuestionInitial)
+                        return QuestionPageContent();
+                      else if (state is LoadingQuestions) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else
+                        return ErrorDialog();
+                    }),
+                  ),
+                ],
               ))),
     );
   }
@@ -53,55 +79,50 @@ class QuestionPage extends StatelessWidget {
 class QuestionPageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<QuestionBloc, QuestionState>(
-      condition: (previous, current) {
-        //only new page
-        if (previous is LoadingQuestions || current is ScoreTable)
-          return true;
-        else
-          return false;
-      },
-      builder: (context, state) {
-        debugPrint('$runtimeType: rebuild all column!');
-        if (state is QuestionInitial) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Timer(),
-              TitleQuestionPage(
-                //TODO it is good with bloc?
-                quantity: context.bloc<QuestionBloc>().quantity,
-              ),
-              Divider(
-                color: Colors.grey,
-              ),
-              AutoSizeText('${state.question.question}',
-                  maxLines: 5,
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Balsamiq',
-                      color: Colors.white,
-                      height: 1.2)),
-              //it will rebuild when tap
-              AnswerFieldCheck(index: 0),
-              AnswerFieldCheck(index: 1),
-              AnswerFieldCheck(index: 2),
-              AnswerFieldCheck(index: 3),
-              ActionsButtons(),
-            ],
-          );
-        } else if (state is LoadingQuestions) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (state is QuestionError) {
-          return ErrorDialog();
-        } else
-          return Container();
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Timer(),
+        TitleQuestionPage(
+          //TODO it is good with bloc?
+          quantity: context.bloc<QuestionBloc>().quantity,
+        ),
+        Divider(
+          color: Colors.grey,
+        ),
+        BlocBuilder<QuestionBloc, QuestionState>(
+            condition: (previous, current) {
+          //rebuild only if question change
+          if (previous is QuestionInitial && current is QuestionInitial) {
+            if (previous.question == current.question)
+              return false;
+            else
+              return true;
+          } else
+            return true;
+        }, builder: (context, state) {
+          if (state is QuestionInitial) {
+            debugPrint('$runtimeType: rebuild question');
+            return AutoSizeText('${state.question.question}',
+                maxLines: 5,
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Balsamiq',
+                    color: Colors.white,
+                    height: 1.2));
+          } else
+            return Container();
+        }),
+        //it will rebuild when tap
+        AnswerFieldCheck(index: 0),
+        AnswerFieldCheck(index: 1),
+        AnswerFieldCheck(index: 2),
+        AnswerFieldCheck(index: 3),
+        ActionsButtons(),
+      ],
     );
   }
 }
@@ -116,8 +137,7 @@ class Timer extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(40),
-        border: Border.all(
-            color: Color.fromARGB(255, 55, 63, 96), width: 3.0),
+        border: Border.all(color: Color.fromARGB(255, 55, 63, 96), width: 3.0),
       ),
       child: LinearPercentIndicator(
         linearGradient: LinearGradient(
@@ -158,8 +178,18 @@ class TitleQuestionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('$runtimeType: rebuild');
-    return BlocBuilder<QuestionBloc, QuestionState>(builder: (context, state) {
+    return BlocBuilder<QuestionBloc, QuestionState>(
+        condition: (previous, current) {
+      //rebuild only if question change
+      if (previous is QuestionInitial && current is QuestionInitial) {
+        if (previous.question == current.question)
+          return false;
+        else
+          return true;
+      } else
+        return true;
+    }, builder: (context, state) {
+      debugPrint('$runtimeType: rebuild');
       if (state is QuestionInitial) {
         return RichText(
           text: TextSpan(children: [

@@ -29,6 +29,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -45,16 +46,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       backgroundColor: Colors.white,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          Center(
-            child: Image(
-              image: AssetImage('assets/images/logo_quiz.png'),
-              width:200
-            ),
-          ),
-        ],
+      body: Center(
+        child: Image(
+          image: AssetImage('assets/images/main_page_bg.png'),
+          height: size.height,
+        ),
       ),
     );
   }
