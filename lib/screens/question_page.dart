@@ -100,11 +100,14 @@ class QuestionPageContent extends StatelessWidget {
               return false;
             else
               return true;
-          } else
+          } else if(current is ScoreTable){
+            return false;
+          }
+          else
             return true;
         }, builder: (context, state) {
+          debugPrint('$runtimeType: rebuild question');
           if (state is QuestionInitial) {
-            debugPrint('$runtimeType: rebuild question');
             return AutoSizeText('${state.question.question}',
                 maxLines: 5,
                 style: TextStyle(
@@ -186,6 +189,8 @@ class TitleQuestionPage extends StatelessWidget {
           return false;
         else
           return true;
+      } else if (current is ScoreTable) {
+        return false;
       } else
         return true;
     }, builder: (context, state) {
@@ -237,7 +242,12 @@ class AnswerFieldCheck extends StatelessWidget {
             padding:
                 const EdgeInsets.only(left: 21, right: 13, top: 3, bottom: 3),
             child: BlocBuilder<QuestionBloc, QuestionState>(
-                builder: (context, state) {
+                condition: (previous, current) {
+              if (current is ScoreTable) {
+                return false;
+              } else
+                return true;
+            }, builder: (context, state) {
               debugPrint('$runtimeType: rebuild');
               if (state is QuestionInitial) {
                 return Row(
@@ -260,7 +270,9 @@ class AnswerFieldCheck extends StatelessWidget {
                   ],
                 );
               } else
-                return Container(height: 45,);
+                return Container(
+                  height: 45,
+                );
             }),
           )),
     );
