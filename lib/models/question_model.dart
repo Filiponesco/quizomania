@@ -3,6 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'question_model.g.dart';
 
 @JsonSerializable()
+//everything is encode base64
 class QuestionModel {
   final String category;
   final String type;
@@ -21,7 +22,7 @@ class QuestionModel {
   factory QuestionModel.fromJson(Map<String, dynamic> json) => _$QuestionFromJson(json);
   Map<String, dynamic> toJson() => _$QuestionToJson(this);
 
-  static List<QuestionModel> listFromJson(List<dynamic> list) =>
+  static List<QuestionModel> listFromJsonBase64(List<dynamic> list) =>
       list == null
           ? List<QuestionModel>()
           : list.map<QuestionModel>((dynamic value) => QuestionModel.fromJson(value)).toList();

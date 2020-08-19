@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:quizomania/models/question_model.dart';
 
 class Question {
@@ -21,16 +23,23 @@ class Question {
       this.correctAnswerIndex,
       this.numberOfQuestion});
 
-  factory Question.fromQuestionModel(QuestionModel model, numberOfQuestion) {
-    final List<String> answers = []
-      ..add(model.correctAnswer)
-      ..addAll(model.incorrectAnswers)
+  factory Question.fromQuestionModelBase64(QuestionModel modelBase64, numberOfQuestion) {
+    final List<String> answersBase64 = []
+      ..add(modelBase64.correctAnswer)
+      ..addAll(modelBase64.incorrectAnswers)
       ..shuffle();
 
-    final index = answers.indexOf(model.correctAnswer);
+    final index = answersBase64.indexOf(modelBase64.correctAnswer);
+
+    Codec<String, String> base64ToString = utf8.fuse(base64);
+    var question = base64ToString.decode(modelBase64.question);
+
+    List<String> answers = List<String>();
+    for(var a in answersBase64)
+      answers.add(base64ToString.decode(a));
 
     return Question(
-        question: model.question,
+        question: question,
         answers: answers,
         correctAnswerIndex: index,
         numberOfQuestion: numberOfQuestion);

@@ -13,10 +13,11 @@ class Repository {
   }
 
   Future<List<QuestionModel>> getQuestions(int quantity, String difficulty, int categoryId) async{
-    var url = "https://opentdb.com/api.php?amount=$quantity&category=$categoryId&difficulty=$difficulty&type=multiple";
+    var url = "https://opentdb.com/api.php?amount=$quantity&category=$categoryId&difficulty=$difficulty&type=multiple&encode=base64";
     var response = await http.get(url);
     var xd = json.decode(response.body);
-    List<QuestionModel> result = QuestionModel.listFromJson(xd['results']);
+    List<QuestionModel> result = QuestionModel.listFromJsonBase64(xd['results']);
     return result;
   }
+
 }

@@ -153,7 +153,7 @@ class Timer extends StatelessWidget {
         percent: 1,
         linearStrokeCap: LinearStrokeCap.roundAll,
         animation: true,
-        animationDuration: 3000,
+        animationDuration: 30000,
         alignment: MainAxisAlignment.end,
         clipLinearGradient: true,
         padding: EdgeInsets.symmetric(horizontal: 18),
@@ -209,7 +209,7 @@ class TitleQuestionPage extends StatelessWidget {
           ]),
         );
       } else
-        return Container();
+        return Container(height: 100);
     });
   }
 }
@@ -260,7 +260,7 @@ class AnswerFieldCheck extends StatelessWidget {
                   ],
                 );
               } else
-                return Container();
+                return Container(height: 45,);
             }),
           )),
     );

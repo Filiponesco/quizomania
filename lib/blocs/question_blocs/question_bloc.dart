@@ -50,7 +50,7 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
         points = List.filled(questionsModel.length, 0);
         questions = List<Question>();
         for (var i = 0; i < questionsModel.length; i++)
-          questions.add(Question.fromQuestionModel(questionsModel[i], i));
+          questions.add(Question.fromQuestionModelBase64(questionsModel[i], i));
         debugPrint('$runtimeType: yield: FirstQuestions()');
         yield FirstQuestion(questions[0]);
       } catch (e) {
