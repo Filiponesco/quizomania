@@ -66,6 +66,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
   @override
   Future<void> close() {
+    debugPrint('$runtimeType: ticker close');
     _tickerSubscription.cancel();
     return super.close();
   }

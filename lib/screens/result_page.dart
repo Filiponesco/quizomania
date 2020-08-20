@@ -16,6 +16,7 @@ class ResultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     String _description;
     Color _colorCard;
     if (percentage < 0.33) {
@@ -36,103 +37,109 @@ class ResultPage extends StatelessWidget {
     }
     return Scaffold(
         backgroundColor: Colors.white,
-        body: Padding(
-          padding: const EdgeInsets.only(
-              left: 25, right: 25, top: 40, bottom: 15),
-          child: Stack(
-              children: <Widget>[ Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        body: Stack(
+          children: [
+            Image.asset('assets/images/result_page_bg.png', height: size.height,),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 25, right: 25, top: 40, bottom: 15),
+              child: Stack(
                   children: <Widget>[
-                    Image(
-                      image: AssetImage('assets/images/logo_quiz.png'),
-                      width: 100,
-                    ),
-                    SizedBox(height: 30,),
-                    Center(
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Image(
+                          image: AssetImage('assets/images/logo_quiz.png'),
+                          width: 100,
                         ),
-                        color: _colorCard,
-                        elevation: 8,
-                        child: Container(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  '$_description\nYour Actual Score',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 30.0,
-                                    fontFamily: 'Balsamiq',
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                        SizedBox(height: 30,),
+                        Center(
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            color: _colorCard,
+                            elevation: 8,
+                            child: Container(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Text(
+                                      '$_description\nYour Actual Score',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 30.0,
+                                        fontFamily: 'Balsamiq',
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${(percentage * 100).floor()}%',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 80.0,
+                                          fontFamily: 'Balsamiq',
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 1
+                                      ),
+                                    ),
+                                    Text(
+                                      '${'Good Answers: $score/$totalScore'}',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 20.0,
+                                          fontFamily: 'Balsamiq',
+                                          color: Colors.white,
+                                          letterSpacing: 1
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  '${(percentage * 100).floor()}%',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 80.0,
-                                      fontFamily: 'Balsamiq',
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1
-                                  ),
-                                ),
-                                Text(
-                                  '${'Good Answers: $score/$totalScore'}',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 20.0,
-                                      fontFamily: 'Balsamiq',
-                                      color: Colors.white,
-                                      letterSpacing: 1
-                                  ),
-                                ),
-                              ],
+                              ),
+                              width: 300,
+                              height: 300,
                             ),
                           ),
-                          width: 300,
-                          height: 300,
                         ),
+                      ]),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          BigButton(
+                            fontColor: Colors.black,
+                            color: Colors.white,
+                            text: 'Close',
+                            onPressed: () {
+                              showDialog(context: context,
+                                  builder: (context){
+                                return ConfirmDialog(
+                                  onPressYes: SystemNavigator.pop,
+                                    content: 'Are you sure you want to exit app?');
+                              }
+                              );
+                            },
+                          ),
+                          BigButton(
+                            color: Colors.green,
+                            text: 'Play Again',
+                            onPressed: () {
+                              Navigator.push(
+                                  context, MaterialPageRoute(builder: (context)=> MyHomePage()));
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   ]),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      BigButton(
-                        fontColor: Colors.black,
-                        color: Colors.white,
-                        text: 'Close',
-                        onPressed: () {
-                          showDialog(context: context,
-                              builder: (context){
-                            return ConfirmDialog(
-                              onPressYes: SystemNavigator.pop,
-                                content: 'Are you sure you want to exit app?');
-                          }
-                          );
-                        },
-                      ),
-                      BigButton(
-                        color: Colors.green,
-                        text: 'Play Again',
-                        onPressed: () {
-                          Navigator.push(
-                              context, MaterialPageRoute(builder: (context)=> MyHomePage()));
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ]),
+            ),
+          ],
         )
     );
   }
