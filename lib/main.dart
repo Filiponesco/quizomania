@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:quizomania/screens/pick_category_page.dart';
 import 'package:quizomania/screens/question_page.dart';
 import 'package:quizomania/widgets/big_button.dart';
@@ -10,6 +11,9 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     return MaterialApp(
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
