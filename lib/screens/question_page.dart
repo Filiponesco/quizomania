@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -59,14 +60,12 @@ class QuestionPage extends StatelessWidget {
                         return true;
                       else
                         return false;
-                    },
-                        builder: (context, state) {
+                    }, builder: (context, state) {
                       debugPrint('$runtimeType: rebuild: all question page');
                       if (state is QuestionInitial) {
                         context.bloc<TimerBloc>().add(FirstPage());
                         return QuestionPageContent();
-                      }
-                      else if (state is LoadingQuestions) {
+                      } else if (state is LoadingQuestions) {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
@@ -89,12 +88,18 @@ class QuestionPageContent extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Timer(),
-        TitleQuestionPage(
-          //TODO it is good with bloc?
-          quantity: context.bloc<QuestionBloc>().quantity,
-        ),
-        Divider(
-          color: Colors.grey,
+        Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+            TitleQuestionPage(
+              //TODO it is good with bloc?
+              quantity: context.bloc<QuestionBloc>().quantity,
+            ),
+            Divider(
+              color: Colors.grey,
+            ),
+          ],),
         ),
         BlocBuilder<QuestionBloc, QuestionState>(
             condition: (previous, current) {
@@ -111,22 +116,35 @@ class QuestionPageContent extends StatelessWidget {
         }, builder: (context, state) {
           debugPrint('$runtimeType: rebuild question');
           if (state is QuestionInitial) {
-            return AutoSizeText('${state.question.question}',
-                maxLines: 5,
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Balsamiq',
-                    color: Colors.white,
-                    height: 1.2));
+            return Container(
+              height: 100,
+              child: AutoSizeText('${state.question.question}',
+                  maxLines: 5,
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Balsamiq',
+                      color: Colors.white,
+                      height: 1.2)),
+            );
           } else
             return Container();
         }),
         //it will rebuild when tap
-        AnswerFieldCheck(index: 0),
-        AnswerFieldCheck(index: 1),
-        AnswerFieldCheck(index: 2),
-        AnswerFieldCheck(index: 3),
+        Container(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              AnswerFieldCheck(index: 0),
+              SizedBox(height: 10,),
+              AnswerFieldCheck(index: 1),
+              SizedBox(height: 10,),
+              AnswerFieldCheck(index: 2),
+              SizedBox(height: 10,),
+              AnswerFieldCheck(index: 3),
+            ],
+          )
+        ),
         ActionsButtons(),
       ],
     );
@@ -178,7 +196,7 @@ class Timer extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           );
-        } else if(state is TimeStop){
+        } else if (state is TimeStop) {
           return Center(
             child: Text(
               state.message,
@@ -190,8 +208,7 @@ class Timer extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           );
-        }
-        else
+        } else
           return Container();
       }),
     );
@@ -220,22 +237,24 @@ class TitleQuestionPage extends StatelessWidget {
     }, builder: (context, state) {
       debugPrint('$runtimeType: rebuild');
       if (state is QuestionInitial) {
-        return RichText(
-          text: TextSpan(children: [
-            TextSpan(
-              text: 'Question ${state.question.numberOfQuestion + 1}',
-              style: TextStyle(
-                  fontFamily: 'Balsamiq',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 33,
-                  color: Colors.grey),
-            ),
-            TextSpan(
-              text: '/$quantity',
-              style: TextStyle(
-                  fontFamily: 'Balsamiq', fontSize: 20, color: Colors.grey),
-            )
-          ]),
+        return Container(
+          child: RichText(
+            text: TextSpan(children: [
+              TextSpan(
+                text: 'Question ${state.question.numberOfQuestion + 1}',
+                style: TextStyle(
+                    fontFamily: 'Balsamiq',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
+                    color: Colors.grey),
+              ),
+              TextSpan(
+                text: '/$quantity',
+                style: TextStyle(
+                    fontFamily: 'Balsamiq', fontSize: 15, color: Colors.grey),
+              )
+            ]),
+          ),
         );
       } else
         return Container(height: 100);
@@ -253,8 +272,7 @@ class AnswerFieldCheck extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        //TODO tap two time on this same field
-        context.bloc<QuestionBloc>().add(AnswerQuestion(index));
+          context.bloc<QuestionBloc>().add(AnswerQuestion(index));
       },
       child: Container(
           decoration: BoxDecoration(
@@ -288,9 +306,11 @@ class AnswerFieldCheck extends StatelessWidget {
                         textAlign: TextAlign.left,
                       ),
                     ),
-                    Checkbox(
-                        checkColor: Colors.blue,
-                        value: index == state.question.chosenAnswerIndex),
+                    CircularCheckBox(
+                      value: index == state.question.chosenAnswerIndex,
+                      checkColor: Colors.white,
+                      disabledColor: Color.fromARGB(255, 33, 72, 106),
+                    ),
                   ],
                 );
               } else
