@@ -7,6 +7,7 @@ import 'package:quizomania/models/enums_difficulty_answer.dart';
 import 'package:quizomania/models/question.dart';
 import 'package:quizomania/models/question_model.dart';
 import 'package:quizomania/services/repository.dart';
+import 'package:quizomania/services/ticker.dart';
 
 part 'question_event.dart';
 
@@ -50,9 +51,11 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
         points = List.filled(questionsModel.length, 0);
         questions = List<Question>();
         for (var i = 0; i < questionsModel.length; i++)
-          questions.add(Question.fromQuestionModelBase64(questionsModel[i], i));
+          questions.add(Question.fromQuestionModelBase64(
+              questionsModel[i], i));
         debugPrint('$runtimeType: yield: FirstQuestions()');
         yield FirstQuestion(questions[0]);
+
       } catch (e) {
         yield QuestionError();
         debugPrint('$runtimeType: Error: ' + e.toString());

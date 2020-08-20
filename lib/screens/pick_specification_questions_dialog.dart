@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:quizomania/blocs/setup_question_blocs/setup_question_bloc.dart';
+import 'package:quizomania/blocs/timer_blocs/timer_bloc.dart';
 import 'package:quizomania/models/category.dart';
 import 'package:quizomania/models/enums_difficulty_answer.dart';
 import 'package:quizomania/blocs/question_blocs/question_bloc.dart';
 import 'package:quizomania/screens/question_page.dart';
+import 'package:quizomania/services/ticker.dart';
 import 'package:quizomania/widgets/my_back_button.dart';
 import 'package:quizomania/widgets/big_button.dart';
 import 'package:quizomania/widgets/difficulty_button.dart';
@@ -25,14 +27,24 @@ class SpecificationQuestionsDialog extends StatelessWidget {
           Navigator.of(context).pop();
         } else if (state is StartedQuiz) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return BlocProvider(
-              create: (context) => QuestionBloc(
-                currentCategory: category,
-                quantity: state.numberOfQuestions,
-                difficulty: state.difficultyLevel,
-              ),
-              child: QuestionPage(),
-            );
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (context) => QuestionBloc(
+                    currentCategory: category,
+                    quantity: state.numberOfQuestions,
+                    difficulty: state.difficultyLevel,
+                  ),
+                ),
+                BlocProvider(
+                  create: (context) => TimerBloc(
+                    ticker: Ticker(),
+                    quantityQuestion: state.numberOfQuestions
+                  ),
+                ),
+              ],
+                child: QuestionPage(),
+              );
           })).then((_) => Navigator.of(context).pop());
         }
       },

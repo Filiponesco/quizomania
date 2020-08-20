@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:quizomania/blocs/question_blocs/question_bloc.dart';
+import 'package:quizomania/blocs/timer_blocs/timer_bloc.dart';
 import 'package:quizomania/models/question.dart';
 import 'package:quizomania/screens/confirm_dialog.dart';
 import 'package:quizomania/screens/error_dialog.dart';
@@ -58,10 +59,13 @@ class QuestionPage extends StatelessWidget {
                         return true;
                       else
                         return false;
-                    }, builder: (context, state) {
+                    },
+                        builder: (context, state) {
                       debugPrint('$runtimeType: rebuild: all question page');
-                      if (state is QuestionInitial)
+                      if (state is QuestionInitial) {
+                        context.bloc<TimerBloc>().add(FirstPage());
                         return QuestionPageContent();
+                      }
                       else if (state is LoadingQuestions) {
                         return Center(
                           child: CircularProgressIndicator(),
@@ -100,10 +104,9 @@ class QuestionPageContent extends StatelessWidget {
               return false;
             else
               return true;
-          } else if(current is ScoreTable){
+          } else if (current is ScoreTable) {
             return false;
-          }
-          else
+          } else
             return true;
         }, builder: (context, state) {
           debugPrint('$runtimeType: rebuild question');
@@ -138,38 +141,59 @@ class Timer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 40,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(40),
         border: Border.all(color: Color.fromARGB(255, 55, 63, 96), width: 3.0),
       ),
-      child: LinearPercentIndicator(
-        linearGradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [
-            Color.fromARGB(255, 254, 79, 104),
-            Color.fromARGB(255, 186, 118, 255)
-          ],
-        ),
-        backgroundColor: Colors.transparent,
-        lineHeight: 35,
-        percent: 1,
-        linearStrokeCap: LinearStrokeCap.roundAll,
-        animation: true,
-        animationDuration: 30000,
-        alignment: MainAxisAlignment.end,
-        clipLinearGradient: true,
-        padding: EdgeInsets.symmetric(horizontal: 18),
-        center: Text(
-          '23',
-          style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              fontFamily: 'Balsamiq'),
-          textAlign: TextAlign.center,
-        ),
-      ),
+      child: BlocBuilder<TimerBloc, TimerState>(builder: (context, state) {
+        debugPrint('$runtimeType: rebuild');
+        if (state is TimerInitial) {
+          return LinearPercentIndicator(
+            linearGradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color.fromARGB(255, 254, 79, 104),
+                Color.fromARGB(255, 186, 118, 255)
+              ],
+            ),
+            backgroundColor: Colors.transparent,
+            lineHeight: 35,
+            percent: state.duration / context.bloc<TimerBloc>().duration,
+            linearStrokeCap: LinearStrokeCap.roundAll,
+            animation: true,
+            animationDuration: 1000,
+            alignment: MainAxisAlignment.end,
+            clipLinearGradient: true,
+            padding: EdgeInsets.symmetric(horizontal: 18),
+            animateFromLastPercent: true,
+            center: Text(
+              state.duration.toString(),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  fontFamily: 'Balsamiq'),
+              textAlign: TextAlign.center,
+            ),
+          );
+        } else if(state is TimeStop){
+          return Center(
+            child: Text(
+              state.message,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  fontFamily: 'Balsamiq'),
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+        else
+          return Container();
+      }),
     );
   }
 }
@@ -301,6 +325,7 @@ class ActionsButtons extends StatelessWidget {
             text: 'Next',
             onPressed: () {
               context.bloc<QuestionBloc>().add(NextQuestion());
+              context.bloc<TimerBloc>().add(NextPage());
             },
           ),
         );
@@ -311,12 +336,14 @@ class ActionsButtons extends StatelessWidget {
             MyBackButton(
               onPressed: () {
                 context.bloc<QuestionBloc>().add(PreviousQuestion());
+                context.bloc<TimerBloc>().add(BackPage());
               },
             ),
             BigButton(
               text: 'Next',
               onPressed: () {
                 context.bloc<QuestionBloc>().add(NextQuestion());
+                context.bloc<TimerBloc>().add(NextPage());
               },
             )
           ],
@@ -328,6 +355,7 @@ class ActionsButtons extends StatelessWidget {
             MyBackButton(
               onPressed: () {
                 context.bloc<QuestionBloc>().add(PreviousQuestion());
+                context.bloc<TimerBloc>().add(BackPage());
               },
             ),
             BigButton(
