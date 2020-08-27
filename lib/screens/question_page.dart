@@ -62,8 +62,11 @@ class QuestionPage extends StatelessWidget {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
-                      } else
+                      } else if(state is QuestionError){
                         return ErrorDialog();
+                      }
+                      else
+                        return Container();
                     }),
                   ),
                 ],
@@ -81,63 +84,64 @@ class QuestionPageContent extends StatelessWidget {
   Widget build(BuildContext context) {
     var quantity = context.bloc<QuestionBloc>().quantity;
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Timer(question: question),
-          Container(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Timer(question: question),
+        Container(
+          padding: EdgeInsets.only(top: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              TitleQuestionPage(
+                  quantity: quantity,
+                  question: question),
+              Divider(
+                color: Colors.grey,
+              ),
+              AutoSizeText('${question.question}',
+                  maxLines: 5,
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Balsamiq',
+                      color: Colors.white,
+                      height: 1.2)),
+            ],
+          ),
+        ),
+        //it will rebuild when tap
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.only(bottom: 12.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                TitleQuestionPage(
-                    //TODO it is good with bloc?
-                    quantity: quantity,
-                    question: question),
-                Divider(
-                  color: Colors.grey,
+                AnswerFieldCheck(index: 0, question: question),
+                SizedBox(
+                  height: 10,
+                ),
+                AnswerFieldCheck(index: 1, question: question),
+                SizedBox(
+                  height: 10,
+                ),
+                AnswerFieldCheck(index: 2, question: question),
+                SizedBox(
+                  height: 10,
+                ),
+                AnswerFieldCheck(
+                  index: 3,
+                  question: question,
                 ),
               ],
             ),
           ),
-          Container(
-            height: 100,
-            child: AutoSizeText('${question.question}',
-                maxLines: 5,
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Balsamiq',
-                    color: Colors.white,
-                    height: 1.2)),
-          ),
-          //it will rebuild when tap
-          Container(
-              child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              AnswerFieldCheck(index: 0, question: question),
-              SizedBox(
-                height: 10,
-              ),
-              AnswerFieldCheck(index: 1, question: question),
-              SizedBox(
-                height: 10,
-              ),
-              AnswerFieldCheck(index: 2, question: question),
-              SizedBox(
-                height: 10,
-              ),
-              AnswerFieldCheck(
-                index: 3,
-                question: question,
-              ),
-            ],
-          )),
-          ActionsButtons(
-            state: context.bloc<QuestionBloc>().state,
-          ),
-        ],
+        ),
+        ActionsButtons(
+          state: context.bloc<QuestionBloc>().state,
+        ),
+      ],
     );
   }
 }
@@ -199,8 +203,9 @@ class AnswerFieldCheck extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Flexible(
-                  child: Text(
+                  child: AutoSizeText(
                     '${question.answers[index]}',
+                    maxLines: 3,
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -279,6 +284,7 @@ class ActionsButtons extends StatelessWidget {
 
 class Timer extends StatelessWidget {
   final Question question;
+
   const Timer({
     this.question,
     Key key,
@@ -292,8 +298,7 @@ class Timer extends StatelessWidget {
         borderRadius: BorderRadius.circular(40),
         border: Border.all(color: Color.fromARGB(255, 55, 63, 96), width: 3.0),
       ),
-      child: BlocBuilder<TimerBloc, TimerState>(
-          builder: (context, state) {
+      child: BlocBuilder<TimerBloc, TimerState>(builder: (context, state) {
         debugPrint('$runtimeType: rebuild');
         if (state is TimerInitial) {
           return LinearPercentIndicator(
