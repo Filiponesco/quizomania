@@ -51,7 +51,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
   @override
   void onTransition(Transition<TimerEvent, TimerState> transition) {
-    debugPrint('$runtimeType:${transition.toString()}');
+    //debugPrint('$runtimeType:${transition.toString()}');
     super.onTransition(transition);
   }
 }

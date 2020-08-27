@@ -19,7 +19,7 @@ class Question {
       this.answers,
       this.correctAnswerIndex,
       this.numberOfQuestion,
-      this.maxTime = 30}) {
+      this.maxTime = 15}) {
     timeLeft = maxTime;
   }
 
@@ -69,7 +69,6 @@ class Question {
   //only run when i listen it
   Stream<int> startTick() {
     return Stream.periodic(Duration(seconds: 1), (x) {
-      debugPrint('$runtimeType: timeLeft: $timeLeft');
       return timeLeft;
     }).take(timeLeft);
   }

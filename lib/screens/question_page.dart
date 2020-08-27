@@ -62,10 +62,9 @@ class QuestionPage extends StatelessWidget {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
-                      } else if(state is QuestionError){
+                      } else if (state is QuestionError) {
                         return ErrorDialog();
-                      }
-                      else
+                      } else
                         return Container();
                     }),
                   ),
@@ -94,9 +93,7 @@ class QuestionPageContent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              TitleQuestionPage(
-                  quantity: quantity,
-                  question: question),
+              TitleQuestionPage(quantity: quantity, question: question),
               Divider(
                 color: Colors.grey,
               ),
@@ -185,43 +182,88 @@ class AnswerFieldCheck extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        context.bloc<QuestionBloc>().add(AnswerQuestion(index));
-      },
-      child: Container(
-          decoration: BoxDecoration(
-              color: Colors.transparent,
-              border:
-                  Border.all(color: Color.fromARGB(255, 33, 72, 106), width: 4),
-              borderRadius: BorderRadius.all(Radius.circular(25.0))),
-          child: Padding(
-            padding:
-                const EdgeInsets.only(left: 21, right: 13, top: 3, bottom: 3),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Flexible(
-                  child: AutoSizeText(
-                    '${question.answers[index]}',
-                    maxLines: 3,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontFamily: 'Balsamiq'),
-                    textAlign: TextAlign.left,
-                  ),
+    return BlocBuilder<TimerBloc, TimerState>(condition: (previous, current) {
+      if (current is TimeStop || previous is TimeStop)
+        return true;
+      else
+        return false;
+    }, builder: (context, state) {
+      debugPrint('$runtimeType: rebuild');
+      if (state is TimerInitial) {
+        return GestureDetector(
+          onTap: () {
+            context.bloc<QuestionBloc>().add(AnswerQuestion(index));
+          },
+          child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(
+                      color: Color.fromARGB(255, 33, 72, 106), width: 4),
+                  borderRadius: BorderRadius.all(Radius.circular(25.0))),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 21, right: 13, top: 3, bottom: 3),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Flexible(
+                      child: AutoSizeText(
+                        '${question.answers[index]}',
+                        maxLines: 3,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontFamily: 'Balsamiq'),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                    CircularCheckBox(
+                        value: index == question.chosenAnswerIndex,
+                        //checkColor: Colors.white,
+                        disabledColor: Color.fromARGB(255, 33, 72, 106),
+                        onChanged: (_) {}),
+                  ],
                 ),
-                CircularCheckBox(
-                    value: index == question.chosenAnswerIndex,
-                    //checkColor: Colors.white,
-                    disabledColor: Color.fromARGB(255, 33, 72, 106),
-                    onChanged: (_) {}),
-              ],
-            ),
-          )),
-    );
+              )),
+        );
+      } else {
+        return Container(
+            decoration: BoxDecoration(
+                color: Colors.transparent,
+                border: Border.all(
+                    color: Color.fromARGB(255, 33, 72, 106), width: 4),
+                borderRadius: BorderRadius.all(Radius.circular(25.0))),
+            child: Padding(
+              padding:
+                  const EdgeInsets.only(left: 21, right: 13, top: 3, bottom: 3),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Flexible(
+                    child: AutoSizeText(
+                      '${question.answers[index]}',
+                      maxLines: 3,
+                      style: TextStyle(
+                          color: index == question.correctAnswerIndex
+                              ? Colors.green
+                              : Colors.red,
+                          fontSize: 18,
+                          fontFamily: 'Balsamiq'),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                  CircularCheckBox(
+                      value: index == question.chosenAnswerIndex,
+                      //checkColor: Colors.white,
+                      disabledColor: Color.fromARGB(255, 33, 72, 106),
+                      onChanged: (_) {}),
+                ],
+              ),
+            ));
+      }
+    });
   }
 }
 
