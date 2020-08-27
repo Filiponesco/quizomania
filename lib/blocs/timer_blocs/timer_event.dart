@@ -2,13 +2,17 @@ part of 'timer_bloc.dart';
 
 @immutable
 abstract class TimerEvent {}
-class Start extends TimerEvent {}
+class Start extends TimerEvent {
+  final Question question;
+  Start(this.question);
+}
 
 class Tick extends TimerEvent {
   final int duration;
-  Tick(this.duration);
+  final int maxDuration;
+  Tick(this.duration, this.maxDuration);
 }
-class FirstPage extends TimerEvent{}
-class Stop extends TimerEvent{}
-class NextPage extends TimerEvent {}
-class BackPage extends TimerEvent {}
+class Stop extends TimerEvent{
+  final int indexOfTime;
+  Stop(this.indexOfTime);
+}

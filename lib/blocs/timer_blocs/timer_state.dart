@@ -5,12 +5,13 @@ abstract class TimerState {}
 
 class TimerInitial extends TimerState {
   final int duration;
+  final int maxDuration;
 
-  TimerInitial(this.duration);
+  TimerInitial(this.duration, this.maxDuration);
 }
 
 class IsRunning extends TimerInitial {
-  IsRunning(duration) : super(duration);
+  IsRunning(duration, maxDuration) : super(duration, maxDuration);
 }
 
 class TimeStop extends TimerState {

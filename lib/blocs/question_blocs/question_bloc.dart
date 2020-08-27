@@ -2,12 +2,12 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
+import 'package:quizomania/blocs/timer_blocs/timer_bloc.dart';
 import 'package:quizomania/models/category.dart';
 import 'package:quizomania/models/enums_difficulty_answer.dart';
 import 'package:quizomania/models/question.dart';
 import 'package:quizomania/models/question_model.dart';
 import 'package:quizomania/services/repository.dart';
-import 'package:quizomania/services/ticker.dart';
 
 part 'question_event.dart';
 
@@ -21,8 +21,9 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
   final Category currentCategory;
   final DifficultyLevel difficulty;
   final int quantity;
+  final TimerBloc timerBloc;
 
-  QuestionBloc({this.currentCategory, this.quantity, this.difficulty});
+  QuestionBloc({this.currentCategory, this.quantity, this.difficulty, this.timerBloc});
 
   @override
   QuestionState get initialState => LoadingQuestions();
@@ -55,7 +56,7 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
               questionsModel[i], i));
         debugPrint('$runtimeType: yield: FirstQuestions()');
         yield FirstQuestion(questions[0]);
-
+        timerBloc.add(Start(questions[currentQuestion]));
       } catch (e) {
         yield QuestionError();
         debugPrint('$runtimeType: Error: ' + e.toString());
@@ -65,20 +66,24 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
         currentQuestion++;
         debugPrint('$runtimeType: yield: MiddleQuestions()');
         yield MiddleQuestion(questions[currentQuestion]);
+        timerBloc.add(Start(questions[currentQuestion]));
       } else if (currentQuestion + 1 == questions.length - 1) {
         currentQuestion++;
         debugPrint('$runtimeType: yield: LastQuestions()');
         yield LastQuestion(questions[currentQuestion]);
+        timerBloc.add(Start(questions[currentQuestion]));
       }
     } else if (event is PreviousQuestion) {
       if (currentQuestion - 1 > 0) {
         currentQuestion--;
         debugPrint('$runtimeType: yield: MiddleQuestion()');
         yield MiddleQuestion(questions[currentQuestion]);
+        timerBloc.add(Start(questions[currentQuestion]));
       } else if (currentQuestion - 1 == 0) {
         currentQuestion--;
         debugPrint('$runtimeType: yield: FirstQuestion()');
         yield FirstQuestion(questions[currentQuestion]);
+        timerBloc.add(Start(questions[currentQuestion]));
       }
     } else if (event is AnswerQuestion) {
       Question q = questions[currentQuestion];
@@ -104,5 +109,10 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
       debugPrint('$runtimeType: yield: ScoreTable()');
       yield ScoreTable(sum, questions.length, sum / questions.length);
     }
+  }
+  @override
+  void onTransition(Transition<QuestionEvent, QuestionState> transition) {
+    debugPrint('$runtimeType: ${transition.toString()}');
+    super.onTransition(transition);
   }
 }

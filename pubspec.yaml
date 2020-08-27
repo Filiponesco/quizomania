@@ -28,7 +28,7 @@ dependencies:
   http: ^0.12.1
   equatable: ^1.2.3
   percent_indicator: ^2.1.5
-  circular_check_box: ^1.0.2
+  circular_check_box: 1.0.1
   flutter:
     sdk: flutter
 

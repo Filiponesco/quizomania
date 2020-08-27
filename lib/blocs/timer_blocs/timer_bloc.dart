@@ -3,71 +3,49 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
-import 'package:quizomania/services/ticker.dart';
+import 'package:quizomania/models/question.dart';
 
 part 'timer_event.dart';
 
 part 'timer_state.dart';
 
 class TimerBloc extends Bloc<TimerEvent, TimerState> {
-  final Ticker _ticker;
   StreamSubscription<int> _tickerSubscription;
-  final int _duration = 30;
   final String _message = 'Time over!';
-  final int quantityQuestion;
-  List<bool> _isQuestionVisited;
-  int currentQuestion;
-
-  get duration => _duration;
-
-  TimerBloc({@required Ticker ticker, @required this.quantityQuestion})
-      : assert(ticker != null),
-        _ticker = ticker {
-    _isQuestionVisited = List<bool>.filled(quantityQuestion, false);
-  }
 
   @override
-  TimerState get initialState => TimerInitial(_duration);
+  TimerState get initialState => TimerInitial(30, 30);
 
   @override
   Stream<TimerState> mapEventToState(
     TimerEvent event,
   ) async* {
     if (event is Start) {
-        yield initialState;
-        _tickerSubscription?.cancel();
-        _tickerSubscription = _ticker.tick(ticks: _duration).listen(
-              (duration) {
-            add(Tick(duration));
-          },
-        );
+      //cancel only subscribers but.. time for questions is ticking
+      _tickerSubscription?.cancel();
+      if (event.question.isTimeOver) yield TimeStop(_message);
+      yield event.question.timeLeft > 0
+          ? IsRunning(event.question.timeLeft, event.question.maxTime)
+          : TimeStop(_message);
+      _tickerSubscription = (event.question.startTick().listen(
+        (duration) {
+          add(Tick(duration, event.question.maxTime));
+        },
+      ));
+      event.question.startTime();
     } else if (event is Tick) {
-      yield event.duration > 0 ? IsRunning(event.duration) : TimeStop(_message);
+      yield event.duration > 0 ? IsRunning(event.duration, event.maxDuration) : TimeStop(_message);
+      //yield IsRunning(event.question.timeLeft);
     } else if (event is Stop) {
       _tickerSubscription?.cancel();
       yield TimeStop('You can\'t answer');
-    } else if (event is NextPage) {
-      currentQuestion++;
-      if(_isQuestionVisited[currentQuestion] == false)
-        add(Start());
-      else add(Stop());
-
-      _isQuestionVisited[currentQuestion] = true;
-    } else if (event is BackPage) {
-      currentQuestion--;
-      add(Stop());
-    } else if(event is FirstPage){
-      currentQuestion = 0;
-      if(_isQuestionVisited[currentQuestion] == false)
-        add(Start());
-      else add(Stop());
     }
   }
 
   @override
   Future<void> close() {
-    debugPrint('$runtimeType: ticker close');
-    _tickerSubscription.cancel();
+    debugPrint('$runtimeType: tickers close');
+    _tickerSubscription?.cancel();
     return super.close();
   }
 
