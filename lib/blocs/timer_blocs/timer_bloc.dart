@@ -11,6 +11,8 @@ part 'timer_state.dart';
 
 class TimerBloc extends Bloc<TimerEvent, TimerState> {
   StreamSubscription<int> _tickerSubscription;
+  //contains all questions with started times
+  List<Question> _startedTimeQuestions= List<Question>();
   final String _message = 'Time over!';
 
   @override
@@ -22,6 +24,9 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   ) async* {
     if (event is Start) {
       //cancel only subscribers but.. time for questions is ticking
+      if(!_startedTimeQuestions.contains(event.question))
+        _startedTimeQuestions.add(event.question);
+
       _tickerSubscription?.cancel();
       if (event.question.isTimeOver) yield TimeStop(_message);
       yield event.question.timeLeft > 0
@@ -36,9 +41,11 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     } else if (event is Tick) {
       yield event.duration > 0 ? IsRunning(event.duration, event.maxDuration) : TimeStop(_message);
       //yield IsRunning(event.question.timeLeft);
-    } else if (event is Stop) {
+    } else if (event is StopAll) {
       _tickerSubscription?.cancel();
-      yield TimeStop('You can\'t answer');
+      for(var q in _startedTimeQuestions)
+        q.stopTime = true;
+      debugPrint('$runtimeType: stop all timers');
     }
   }
 
@@ -46,6 +53,8 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   Future<void> close() {
     debugPrint('$runtimeType: tickers close');
     _tickerSubscription?.cancel();
+    for(var q in _startedTimeQuestions)
+      q.stopTime = true;
     return super.close();
   }
 

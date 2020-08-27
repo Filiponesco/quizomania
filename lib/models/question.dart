@@ -13,6 +13,7 @@ class Question {
   bool isTimeRunning = false;
   bool isTimeOver = false;
   final int maxTime;
+  bool stopTime = false; //true when user quit quiz
 
   Question(
       {this.question,
@@ -59,8 +60,12 @@ class Question {
     if (isTimeRunning == false) {
       isTimeRunning = true;
       for (var i = timeLeft; i > 0; i--) {
-        timeLeft -= 1;
-        await Future.delayed(Duration(seconds: 1));
+        if(stopTime == false){
+          debugPrint('$runtimeType: time go');
+          timeLeft -= 1;
+          await Future.delayed(Duration(seconds: 1));
+        }
+        else break;
       }
       isTimeOver = true;
     }

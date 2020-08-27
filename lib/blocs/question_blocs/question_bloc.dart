@@ -108,6 +108,7 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
           points.fold(0, (previousValue, element) => previousValue + element);
       debugPrint('$runtimeType: yield: ScoreTable()');
       yield ScoreTable(sum, questions.length, sum / questions.length);
+      timerBloc.add(StopAll());
     }
   }
   @override

@@ -12,7 +12,5 @@ class Tick extends TimerEvent {
   final int maxDuration;
   Tick(this.duration, this.maxDuration);
 }
-class Stop extends TimerEvent{
-  final int indexOfTime;
-  Stop(this.indexOfTime);
+class StopAll extends TimerEvent{
 }
