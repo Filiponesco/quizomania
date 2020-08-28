@@ -11,9 +11,9 @@ class Question {
   final int numberOfQuestion;
   int timeLeft;
   bool isTimeRunning = false;
-  bool isTimeOver = false;
   final int maxTime;
   bool stopTime = false; //true when user quit quiz
+  bool canAnswer = true;
 
   Question(
       {this.question,
@@ -67,7 +67,6 @@ class Question {
         }
         else break;
       }
-      isTimeOver = true;
     }
   }
 

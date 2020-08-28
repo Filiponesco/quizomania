@@ -86,22 +86,15 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
         timerBloc.add(Start(questions[currentQuestion]));
       }
     } else if (event is AnswerQuestion) {
+      //i needn't yield state, because TimerBloc yield StopTime()
       Question q = questions[currentQuestion];
       q.chosenAnswerIndex = event.index;
+      q.canAnswer = false;
+      timerBloc.add(AnswerStop(q));
       if (q.isCorrect) {
         points[q.numberOfQuestion] = 1;
       } else {
         points[q.numberOfQuestion] = 0;
-      }
-      if (q.numberOfQuestion == 0) {
-        debugPrint('$runtimeType: yield: FirstQuestion()');
-        yield FirstQuestion(questions[currentQuestion]);
-      } else if (q.numberOfQuestion == questions.length - 1) {
-        debugPrint('$runtimeType: yield: LastQuestion()');
-        yield LastQuestion(questions[currentQuestion]);
-      } else {
-        debugPrint('$runtimeType: yield: MiddleQuestion()');
-        yield MiddleQuestion(questions[currentQuestion]);
       }
     } else if (event is EndTest) {
       int sum =

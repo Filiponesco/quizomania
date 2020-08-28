@@ -14,3 +14,7 @@ class Tick extends TimerEvent {
 }
 class StopAll extends TimerEvent{
 }
+class AnswerStop extends TimerEvent{
+  final Question question;
+  AnswerStop(this.question);
+}
