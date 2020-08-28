@@ -1,3 +1,4 @@
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quizomania/models/category.dart';
@@ -38,17 +39,20 @@ class _PickCategoryPageState extends State<PickCategoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Stack(children: <Widget>[
-      Center(
+      /*Center(
         child:
             Image(image: AssetImage('assets/images/logo_quiz.png'), width: 200),
-      ),
+      ),*/
       Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: BlocBuilder<CategoryBloc, CategoryState>(
           bloc: _categoryBloc,
           builder: (context, state) {
             if (state is LoadingCategories) {
-              return Center(child: CircularProgressIndicator());
+              return FlareActor("assets/animations/logo_anim.flr",
+                  alignment: Alignment.center,
+                  fit: BoxFit.contain,
+                  animation: 'Loading');
             } else if (state is CategoryList) {
               return ListView.builder(
                 itemBuilder: (_, index) {

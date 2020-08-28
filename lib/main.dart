@@ -1,3 +1,4 @@
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quizomania/screens/pick_category_page.dart';
@@ -11,15 +12,13 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    /*SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);*/
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     return MaterialApp(
-      theme: ThemeData(
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage()
-    );
+        theme: ThemeData(
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: MyHomePage());
   }
 }
 
@@ -31,6 +30,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String _nameAnimation = 'Intro';
+  bool _snapEnd = false;
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -39,21 +41,34 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           //i dont know why this button it is not on center!
-          SizedBox(width:40),
+          SizedBox(width: 40),
           BigButton(
             color: Colors.blue,
             text: 'Start',
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> PickCategoryPage()));
+              setState(() {
+                _nameAnimation = 'Outro';
+              });
             },
           ),
         ],
       ),
       backgroundColor: Colors.white,
       body: Center(
-        child: Image(
-          image: AssetImage('assets/images/main_page_bg.png'),
-          height: size.height,
+        child: FlareActor(
+          "assets/animations/logo_anim.flr",
+          alignment: Alignment.center,
+          fit: BoxFit.contain,
+          animation: _nameAnimation,
+          callback: (value) {
+            debugPrint('$runtimeType: $value');
+            if (value == 'Outro')
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => PickCategoryPage()));
+            setState(() {
+              _nameAnimation = 'Intro';
+            });
+          },
         ),
       ),
     );

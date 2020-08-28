@@ -1,0 +1,11 @@
+Background: rgb(37, 44, 74)
+
+GreenLogo: rgb(0, 214, 100)
+RedLogo: rgb(255, 55, 82)
+PurpleLogo: rgb(104, 39, 139)
+BlueLogo: rgb(25, 87, 116)
+
+Pink: rgb(255, 0, 255)
+Orange: rgb(248, 148, 29)
+Blue: rgb(0, 0, 255)
+Green: rgb(0, 214, 100)
