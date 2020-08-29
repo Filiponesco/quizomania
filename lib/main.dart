@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quizomania/blocs/category_blocs/category_bloc.dart';
 import 'package:quizomania/screens/error_dialog.dart';
 import 'package:quizomania/screens/pick_category_page.dart';
-import 'package:quizomania/screens/question_page.dart';
 import 'package:quizomania/widgets/big_button.dart';
 
 void main() {
@@ -31,6 +30,7 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //i have here CategoryBloc: change state when loading on main screen
     return BlocConsumer<CategoryBloc, CategoryState>(
         listener: (context, state) {
       if (state is CategoryList)
@@ -45,11 +45,13 @@ class MyHomePage extends StatelessWidget {
       if (state is LoadingCategories) {
         return Scaffold(
           backgroundColor: Colors.white,
-          body: FlareActor(
-            "assets/animations/logo_anim.flr",
-            alignment: Alignment.center,
-            fit: BoxFit.contain,
-            animation: 'Outro',
+          body: //Container(color: Colors.red,),
+          MyAnimation(
+            state.animationName,
+            key: UniqueKey(),
+            callback: () {
+              context.bloc<CategoryBloc>().add(EndOutro());
+            },
           ),
         );
       } else {
@@ -69,14 +71,36 @@ class MyHomePage extends StatelessWidget {
             ],
           ),
           backgroundColor: Colors.white,
-          body: FlareActor(
-            "assets/animations/logo_anim.flr",
-            alignment: Alignment.center,
-            fit: BoxFit.contain,
-            animation: 'Intro',
+          body: MyAnimation(
+            'Intro',
+            key: UniqueKey(),
           ),
         );
       }
     });
+  }
+}
+
+class MyAnimation extends StatelessWidget {
+  const MyAnimation(
+    this._animationName, {
+    @required Key key,
+    this.callback,
+  }) : super(key: key);
+  final _animationName;
+  final VoidCallback callback;
+
+  @override
+  Widget build(BuildContext context) {
+    return FlareActor(
+      "assets/animations/logo_anim.flr",
+      alignment: Alignment.center,
+      fit: BoxFit.contain,
+      animation: _animationName,
+      callback: (name) {
+        debugPrint('$runtimeType: end of animation: $name, callback $callback');
+        callback?.call();
+      },
+    );
   }
 }

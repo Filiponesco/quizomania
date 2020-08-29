@@ -30,6 +30,7 @@ dependencies:
   percent_indicator: ^2.1.5
   circular_check_box: 1.0.1
   flare_flutter: ^2.0.6
+  rxdart: ^0.24.1
   flutter:
     sdk: flutter
 
