@@ -8,7 +8,8 @@ import 'package:quizomania/screens/pick_category_page.dart';
 import 'package:quizomania/widgets/big_button.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(BlocProvider<CategoryBloc>(
+      create: (context) => CategoryBloc(), child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -20,8 +21,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: BlocProvider<CategoryBloc>(
-            create: (context) => CategoryBloc(), child: MyHomePage()));
+        home: MyHomePage());
   }
 }
 
@@ -33,23 +33,25 @@ class MyHomePage extends StatelessWidget {
     //i have here CategoryBloc: change state when loading on main screen
     return BlocConsumer<CategoryBloc, CategoryState>(
         listener: (context, state) {
-      if (state is CategoryList)
+      if (state is CategoryList) {
+        debugPrint('$runtimeType: state is: CategoryList: Push');
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (contextBuilder) =>
                     PickCategoryPage(context.bloc<CategoryBloc>())));
-      else if (state is CategoryError)
+      } else if (state is CategoryError)
         showDialog(context: context, builder: (_) => ErrorDialog());
     }, builder: (context, state) {
       if (state is LoadingCategories) {
         return Scaffold(
           backgroundColor: Colors.white,
           body: //Container(color: Colors.red,),
-          MyAnimation(
+              MyAnimation(
             state.animationName,
             key: UniqueKey(),
             callback: () {
+              print('will be unikey?: ${UniqueKey()}');
               context.bloc<CategoryBloc>().add(EndOutro());
             },
           ),
@@ -98,7 +100,8 @@ class MyAnimation extends StatelessWidget {
       fit: BoxFit.contain,
       animation: _animationName,
       callback: (name) {
-        debugPrint('$runtimeType: end of animation: $name, callback $callback');
+        debugPrint(
+            '$runtimeType: unikey: $key, end of animation: $name, callback $callback');
         callback?.call();
       },
     );
