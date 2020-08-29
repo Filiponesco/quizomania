@@ -1,28 +1,20 @@
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quizomania/models/category.dart';
 import 'package:quizomania/blocs/category_blocs/category_bloc.dart';
 import 'package:quizomania/blocs/setup_question_blocs/setup_question_bloc.dart';
-import 'package:quizomania/screens/error_dialog.dart';
 import 'package:quizomania/screens/pick_specification_questions_dialog.dart';
 import 'package:quizomania/widgets/one_category_card.dart';
 
-class PickCategoryPage extends StatefulWidget {
-  @override
-  _PickCategoryPageState createState() => _PickCategoryPageState();
-}
-
-class _PickCategoryPageState extends State<PickCategoryPage> {
-  CategoryBloc _categoryBloc;
-
+class PickCategoryPage extends StatelessWidget {
+  final CategoryBloc _categoryBloc;
+  PickCategoryPage(this._categoryBloc);
   void _onPickCategory(Category category, context) {
     print('selected category id: ${category.id}');
     showDialog(
         context: context,
         builder: (BuildContext context) => BlocProvider(
-              create: (BuildContext context) =>
-                  SetupQuestionBloc(),
+              create: (BuildContext context) => SetupQuestionBloc(),
               child: SpecificationQuestionsDialog(
                 category: category,
               ),
@@ -30,30 +22,15 @@ class _PickCategoryPageState extends State<PickCategoryPage> {
   }
 
   @override
-  void initState() {
-    _categoryBloc = CategoryBloc()..add(LoadCategories());
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Stack(children: <Widget>[
-      /*Center(
-        child:
-            Image(image: AssetImage('assets/images/logo_quiz.png'), width: 200),
-      ),*/
       Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: BlocBuilder<CategoryBloc, CategoryState>(
           bloc: _categoryBloc,
           builder: (context, state) {
-            if (state is LoadingCategories) {
-              return FlareActor("assets/animations/logo_anim.flr",
-                  alignment: Alignment.center,
-                  fit: BoxFit.contain,
-                  animation: 'Loading');
-            } else if (state is CategoryList) {
+            if (state is CategoryList) {
               return ListView.builder(
                 itemBuilder: (_, index) {
                   Color bgColor;
@@ -78,8 +55,6 @@ class _PickCategoryPageState extends State<PickCategoryPage> {
                 },
                 itemCount: state.categories.length,
               );
-            } else if (state is CategoryError) {
-              return ErrorDialog();
             } else {
               return Center(child: Text('state is: ${state.toString()}'));
             }
@@ -87,11 +62,5 @@ class _PickCategoryPageState extends State<PickCategoryPage> {
         ),
       ),
     ]));
-  }
-
-  @override
-  void dispose() {
-    _categoryBloc.close();
-    super.dispose();
   }
 }
