@@ -25,20 +25,15 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       try {
         if (categories.isEmpty) {
           //download only one time
-          yield LoadingCategories('Outro');
+          yield LoadingCategories();
           categories = await repo.getAllCategories();
         }
-        await Future.delayed(Duration(seconds: 7));
         debugPrint('$runtimeType: yield: CategoryList');
         yield CategoryList(categories);
       } catch (e) {
         print(e);
         yield CategoryError();
       }
-    } else if (event is EndOutro) {
-      debugPrint('$runtimeType: yield: Loading');
-      //only when is still loading
-      if (categories.isEmpty) yield LoadingCategories('Loading');
     }
   }
 
@@ -46,11 +41,5 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   void onTransition(Transition<CategoryEvent, CategoryState> transition) {
     debugPrint("$runtimeType: $transition");
     super.onTransition(transition);
-  }
-
-  @override
-  Stream<Transition<CategoryEvent, CategoryState>> transformEvents(
-      Stream<CategoryEvent> events, transitionFn) {
-    return events.flatMap(transitionFn);
   }
 }

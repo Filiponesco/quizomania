@@ -33,30 +33,30 @@ class MyHomePage extends StatelessWidget {
     //i have here CategoryBloc: change state when loading on main screen
     return BlocConsumer<CategoryBloc, CategoryState>(
         listener: (context, state) {
-      if (state is CategoryList) {
-        debugPrint('$runtimeType: state is: CategoryList: Push');
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (contextBuilder) =>
-                    PickCategoryPage(context.bloc<CategoryBloc>())));
-      } else if (state is CategoryError)
-        showDialog(context: context, builder: (_) => ErrorDialog());
-    }, builder: (context, state) {
+          if (state is CategoryList) {
+            //OMG! whe i use euqatable it doesn't listen second time because CategoryList is the same
+            debugPrint('$runtimeType: state is: CategoryList: Push');
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (contextBuilder) =>
+                        PickCategoryPage(context.bloc<CategoryBloc>())));
+          } else if (state is CategoryError)
+            showDialog(context: context, builder: (_) => ErrorDialog());
+        }, builder: (context, state) {
+          //TODO add background
       if (state is LoadingCategories) {
         return Scaffold(
           backgroundColor: Colors.white,
-          body: //Container(color: Colors.red,),
-              MyAnimation(
-            state.animationName,
-            key: UniqueKey(),
-            callback: () {
-              print('will be unikey?: ${UniqueKey()}');
-              context.bloc<CategoryBloc>().add(EndOutro());
-            },
-          ),
+          body:
+          const FlareActor(
+            "assets/animations/logo_anim.flr",
+            alignment: Alignment.center,
+            fit: BoxFit.contain,
+            animation:  'Loading',
+          )
         );
-      } else {
+      } else{
         return Scaffold(
           floatingActionButton: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -67,43 +67,21 @@ class MyHomePage extends StatelessWidget {
                 color: Colors.blue,
                 text: 'Start',
                 onPressed: () {
+                  debugPrint('$runtimeType: onPress start');
                   context.bloc<CategoryBloc>().add(LoadCategories());
                 },
               ),
             ],
           ),
           backgroundColor: Colors.white,
-          body: MyAnimation(
-            'Intro',
-            key: UniqueKey(),
+          body: const FlareActor(
+            "assets/animations/logo_anim.flr",
+            alignment: Alignment.center,
+            fit: BoxFit.contain,
+            animation:  'Intro',
           ),
         );
       }
     });
-  }
-}
-
-class MyAnimation extends StatelessWidget {
-  const MyAnimation(
-    this._animationName, {
-    @required Key key,
-    this.callback,
-  }) : super(key: key);
-  final _animationName;
-  final VoidCallback callback;
-
-  @override
-  Widget build(BuildContext context) {
-    return FlareActor(
-      "assets/animations/logo_anim.flr",
-      alignment: Alignment.center,
-      fit: BoxFit.contain,
-      animation: _animationName,
-      callback: (name) {
-        debugPrint(
-            '$runtimeType: unikey: $key, end of animation: $name, callback $callback');
-        callback?.call();
-      },
-    );
   }
 }
