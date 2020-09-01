@@ -21,4 +21,6 @@ class ClosedDialog extends SetupQuestionState {}
 class StartedQuiz extends SetupQuestionInitial {
   StartedQuiz(DifficultyLevel difficultyLevel, int numberOfQuestions)
       : super(difficultyLevel, numberOfQuestions);
+  @override
+  List<Object> get props => [difficultyLevel, numberOfQuestions];
 }

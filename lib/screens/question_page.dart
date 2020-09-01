@@ -182,7 +182,7 @@ class AnswerFieldCheck extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TimerBloc, TimerState>(condition: (previous, current) {
+    return BlocBuilder<TimerBloc, TimerState>(buildWhen: (previous, current) {
       if (current is TimeStop || previous is TimeStop)
         return true;
       else

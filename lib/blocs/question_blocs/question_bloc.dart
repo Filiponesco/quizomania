@@ -23,10 +23,7 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
   final int quantity;
   final TimerBloc timerBloc;
 
-  QuestionBloc({this.currentCategory, this.quantity, this.difficulty, this.timerBloc});
-
-  @override
-  QuestionState get initialState => LoadingQuestions();
+  QuestionBloc({this.currentCategory, this.quantity, this.difficulty, this.timerBloc}) : super(LoadingQuestions());
 
   @override
   Stream<QuestionState> mapEventToState(QuestionEvent event) async* {

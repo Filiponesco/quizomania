@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quizomania/models/category.dart';
 import 'package:quizomania/blocs/category_blocs/category_bloc.dart';
 import 'package:quizomania/blocs/setup_question_blocs/setup_question_bloc.dart';
+import 'package:quizomania/models/enums_difficulty_answer.dart';
 import 'package:quizomania/screens/pick_specification_questions_dialog.dart';
 import 'package:quizomania/widgets/one_category_card.dart';
 
@@ -14,7 +15,7 @@ class PickCategoryPage extends StatelessWidget {
     showDialog(
         context: context,
         builder: (BuildContext context) => BlocProvider(
-              create: (BuildContext context) => SetupQuestionBloc(),
+              create: (BuildContext context) => SetupQuestionBloc(DifficultyLevel.medium, 5),
               child: SpecificationQuestionsDialog(
                 category: category,
               ),
@@ -28,7 +29,7 @@ class PickCategoryPage extends StatelessWidget {
       Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: BlocBuilder<CategoryBloc, CategoryState>(
-          bloc: _categoryBloc,
+          cubit: _categoryBloc,
           builder: (context, state) {
             if (state is CategoryList) {
               return ListView.builder(

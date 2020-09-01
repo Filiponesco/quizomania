@@ -17,8 +17,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   final String _messageTimeOver = 'Time over!';
   final String _messageAnswered = 'You already answered!';
 
-  @override
-  TimerState get initialState => TimerInitial(30, 30);
+  TimerBloc() : super(TimerInitial(30, 30));
 
   @override
   Stream<TimerState> mapEventToState(

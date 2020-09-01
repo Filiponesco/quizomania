@@ -13,10 +13,8 @@ part 'category_state.dart';
 
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   List<Category> categories = [];
-  Repository repo = Repository();
-
-  @override
-  CategoryState get initialState => CategoryInitial();
+  Repository _repo;
+  CategoryBloc(this._repo) : super(CategoryInitial());
 
   @override
   Stream<CategoryState> mapEventToState(CategoryEvent event) async* {
@@ -26,7 +24,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         if (categories.isEmpty) {
           //download only one time
           yield LoadingCategories();
-          categories = await repo.getAllCategories();
+          categories = await _repo.getAllCategories();
         }
         debugPrint('$runtimeType: yield: CategoryList');
         yield CategoryList(categories);

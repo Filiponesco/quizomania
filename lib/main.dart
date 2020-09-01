@@ -5,11 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quizomania/blocs/category_blocs/category_bloc.dart';
 import 'package:quizomania/screens/error_dialog.dart';
 import 'package:quizomania/screens/pick_category_page.dart';
+import 'package:quizomania/services/repository.dart';
 import 'package:quizomania/widgets/big_button.dart';
 
 void main() {
   runApp(BlocProvider<CategoryBloc>(
-      create: (context) => CategoryBloc(), child: MyApp()));
+      create: (context) => CategoryBloc(Repository()), child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

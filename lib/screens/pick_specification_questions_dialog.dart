@@ -109,7 +109,7 @@ class SpecificationQuestionsDialog extends StatelessWidget {
                 ),
               ),
               BlocBuilder<SetupQuestionBloc, SetupQuestionState>(
-                  condition: (previous, current) {
+                  buildWhen: (previous, current) {
                 if (previous is SetupQuestionInitial &&
                     current is SetupQuestionInitial) {
                   if (previous.numberOfQuestions != current.numberOfQuestions)
@@ -163,7 +163,7 @@ class DifficultyChoose extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SetupQuestionBloc, SetupQuestionState>(
-        condition: (previous, current) {
+        buildWhen: (previous, current) {
       if (previous is SetupQuestionInitial && current is SetupQuestionInitial) {
         if (previous.difficultyLevel != current.difficultyLevel)
           return true;
